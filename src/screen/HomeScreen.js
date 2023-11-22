@@ -1,48 +1,51 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { format } from 'date-fns';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 
 const HomeScreen = ({ route }) => {
   const { patientData } = route.params;
 
   const handleTerminarHorario = () => {
-    // Lógica para terminar el horario laboral
     console.log('Horario laboral terminado');
   };
 
+  const formattedTimestamp = patientData.timestamp
+    ? format(new Date(patientData.timestamp), 'yyyy-MM-dd HH:mm:ss')
+    : '';
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido a la pantalla de inicio</Text>
+      <Text style={styles.title}>¡Bienvenido a la pantalla de inicio!</Text>
       {patientData && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Datos del paciente:</Text>
-          <Text>{`Nombre: ${patientData.nombre}`}</Text>
-          <Text>{`Edad: ${patientData.edad}`}</Text>
-          <Text>{`Diagnóstico: ${patientData.diagnostico}`}</Text>
-          {patientData.location && (
-            <View>
-              <Text>{`Ubicación: ${JSON.stringify(patientData.location)}`}</Text>
-            </View>
-          )}
-          {patientData.timestamp && (
-            <View>
-              <Text>{`Horario de Asistencia: ${patientData.timestamp.toString()}`}</Text>
-            </View>
-          )}
-          {/* Pressable para terminar el horario laboral */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.terminarHorarioButton,
-              { backgroundColor: pressed ? 'red' : '#cc0000' },
-            ]}
-            onPress={handleTerminarHorario}
-          >
-            <Text style={{ color: 'white' }}>Terminar Jornada Laboral</Text>
-          </Pressable>
+          <View style={styles.patientInfo}>
+            <Text style={styles.patientInfoText}>{`Nombre: ${patientData.nombre}`}</Text>
+            <Text style={styles.patientInfoText}>{`Edad: ${patientData.edad}`}</Text>
+            <Text style={styles.patientInfoText}>{`Diagnóstico: ${patientData.diagnostico}`}</Text>
+            {patientData.location && (
+              <Text style={styles.patientInfoText}>{`Ubicación: ${JSON.stringify(patientData.location)}`}</Text>
+            )}
+            {patientData.timestamp && (
+              <View style={styles.dateTimeContainer}>
+                <Text style={styles.patientInfoText}>
+                  {`Horario de Asistencia: ${formattedTimestamp}`}</Text>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.terminarHorarioButton,
+                    { backgroundColor: pressed ? 'red' : '#cc0000' },
+                  ]}
+                  onPress={handleTerminarHorario}
+                >
+                  <Text style={styles.buttonText}>Finalizar Jornada</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         </View>
       )}
-      
-      {/* Renderizar el componente PlanFarmacologicoScreen */}
+
       <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
     </View>
   );
@@ -54,28 +57,49 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 20,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ccc',
     marginBottom: 20,
+    width: '100%',
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  patientInfo: {
+    marginBottom: 15,
+  },
+  patientInfoText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  dateTimeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   terminarHorarioButton: {
-    marginTop: 10,
-    padding: 10,
+    marginTop: 1,
+    marginLeft: 10,
+    padding: 4,
     borderRadius: 5,
     alignItems: 'center',
+    justifyContent: 'center',
+    width: '70%',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
