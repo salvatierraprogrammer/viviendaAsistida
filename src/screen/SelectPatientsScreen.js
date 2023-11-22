@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
 import { vivienda } from '../data/vivienda';
+import { TextInput, Button } from 'react-native-paper';
 
 const SelectPatientsScreen = ({ route, navigation }) => {
   const { house } = route.params;
@@ -8,8 +9,6 @@ const SelectPatientsScreen = ({ route, navigation }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleSelectPatients = () => {
-    // Puedes implementar la lógica para seleccionar los pacientes
-    // y obtener la información necesaria antes de navegar a la siguiente pantalla.
     if (selectedPatient) {
       navigation.navigate('ManageUsers', { selectedPatient });
     }
@@ -28,34 +27,50 @@ const SelectPatientsScreen = ({ route, navigation }) => {
   );
 
   const handlePatientSelection = (selectedPatient) => {
-    // Actualiza el estado con el paciente seleccionado
     setSelectedPatient(selectedPatient);
   };
 
   return (
     <View>
+      <Image
+        style={styles.image}
+        source={{
+          uri:
+            'https://media.istockphoto.com/id/1397186871/es/vector/los-j%C3%B3venes-est%C3%A1n-parados-cerca-de-un-enorme-tel%C3%A9fono-inteligente-con-elementos-de-redes.jpg?s=612x612&w=0&k=20&c=MFHjki1qz3a75OrHxPYw1DvCibxi1xxCqM90Xw4uvy4=',
+        }}
+      />
       <Text style={styles.houseTitle}>{`Pacientes de ${selectedHouse.nombre}`}</Text>
       <FlatList
         data={selectedHouse.pacientes}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
-      {/* Botones u opciones para seleccionar a los pacientes */}
-      <Pressable
-        style={styles.selectButton}
+      <Button
+        icon="chevron-right"
+        mode="outlined"
         onPress={handleSelectPatients}
+        style={styles.selectButton}
+        labelStyle={styles.selectButtonText}
       >
-        <Text style={styles.selectButtonText}>Seleccionar Pacientes</Text>
-      </Pressable>
+        Seleccionar Pacientes
+      </Button>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  image: {
+    width: '100%',
+    height: 300, // Adjust the height as needed
+    resizeMode: 'cover',
+  },
   houseTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    alignContent: 'center',
+    textAlign: 'center',
+    marginTop: 20,
   },
   patientItem: {
     padding: 10,
@@ -67,21 +82,20 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   selectedPatientItem: {
-    backgroundColor: '#ADD8E6', // Puedes cambiar el color según tus preferencias
+    backgroundColor: '#ADD8E6',
     justifyContent: 'center',
   },
   selectButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
     marginTop: 10,
     alignItems: 'center',
-    width: '90%',
+    width: '70%',
     justifyContent: 'center',
-    marginLeft: 15,
+    marginLeft: 50,
+    alignContent: 'center',
   },
   selectButtonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
   },
 });
