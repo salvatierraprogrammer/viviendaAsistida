@@ -5,6 +5,8 @@ import SelectHouseScreen from './src/screen/SelectHouseScreen';
 import ManageUsersScreen from './src/screen/ManageUsersScreen';
 import HomeScreen from './src/screen/HomeScreen';
 import SelectPatientsScreen from './src/screen/SelectPatientsScreen';
+import DetailsPlanFarma from './src/screen/DetailsPlanFarma';
+import PlanFarmacologicoScreen from './src/screen/PlanFarmacologicoScreen';
 // App.js
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -21,6 +23,9 @@ const App = () => {
         <Stack.Screen name="SelectPatients" component={SelectPatientsScreen} />
         <Stack.Screen name="ManageUsers" component={ManageUsersScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="DetailsPlanFarma" component={DetailsPlanFarma} />
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );

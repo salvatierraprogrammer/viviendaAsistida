@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, ScrollView } from 'react-native';
 import { format } from 'date-fns';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
+import CardUltimaMedicacion from './CardUtimaMedicacion';
 
 const HomeScreen = ({ route }) => {
   const { patientData } = route.params;
@@ -13,41 +14,43 @@ const HomeScreen = ({ route }) => {
   const formattedTimestamp = patientData.timestamp
     ? format(new Date(patientData.timestamp), 'yyyy-MM-dd HH:mm:ss')
     : '';
-
+    
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¡Bienvenido a la pantalla de inicio!</Text>
-      {patientData && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Datos del paciente:</Text>
-          <View style={styles.patientInfo}>
-            <Text style={styles.patientInfoText}>{`Nombre: ${patientData.nombre}`}</Text>
-            <Text style={styles.patientInfoText}>{`Edad: ${patientData.edad}`}</Text>
-            <Text style={styles.patientInfoText}>{`Diagnóstico: ${patientData.diagnostico}`}</Text>
-            {patientData.location && (
-              <Text style={styles.patientInfoText}>{`Ubicación: ${JSON.stringify(patientData.location)}`}</Text>
-            )}
-            {patientData.timestamp && (
-              <View style={styles.dateTimeContainer}>
-                <Text style={styles.patientInfoText}>
-                  {`Horario de Asistencia: ${formattedTimestamp}`}</Text>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.terminarHorarioButton,
-                    { backgroundColor: pressed ? 'red' : '#cc0000' },
-                  ]}
-                  onPress={handleTerminarHorario}
-                >
-                  <Text style={styles.buttonText}>Finalizar Jornada</Text>
-                </Pressable>
-              </View>
-            )}
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        {patientData && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Datos del paciente:</Text>
+            <View style={styles.patientInfo}>
+              <Text style={styles.patientInfoText}>{`Nombre: ${patientData.nombre}`}</Text>
+              <Text style={styles.patientInfoText}>{`Edad: ${patientData.edad}`}</Text>
+              <Text style={styles.patientInfoText}>{`Diagnóstico: ${patientData.diagnostico}`}</Text>
+              {/* {patientData.location && (
+                <Text style={styles.patientInfoText}>{`Ubicación: ${JSON.stringify(patientData.location)}`}</Text>
+              )} */}
+              {patientData.timestamp && (
+                <View style={styles.dateTimeContainer}>
+                  <Text style={styles.patientInfoText}>
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.terminarHorarioButton,
+                        { backgroundColor: pressed ? 'red' : '#cc0000' },
+                      ]}
+                      onPress={handleTerminarHorario}
+                    >
+                      <Text style={styles.buttonText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
+                    </Pressable>
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      )}
+        )}
+        <CardUltimaMedicacion />
+        <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
 
-      <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

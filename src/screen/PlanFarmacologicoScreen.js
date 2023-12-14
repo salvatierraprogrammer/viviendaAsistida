@@ -1,45 +1,41 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Avatar, Card, IconButton } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const PlanFarmacologicoScreen = ({ route }) => {
   const { paciente } = route.params;
+  const navigation = useNavigation();
 
-  const getCurrentTime = () => {
-    const now = new Date();
-    const offset = -3 * 60; // GMT offset en minutos
-    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-    const localTime = new Date(utc + offset * 60000);
-  
-    const hours = localTime.getHours();
-    const minutes = localTime.getMinutes();
-    console.log(`Current Time: ${hours}:${minutes}`);
-    return `${hours}:${minutes}`;
-  };
-  
-  const compareTimes = (currentTime, medicationTime) => {
-    const [currentHours, currentMinutes] = currentTime.split(':').map(Number);
-    const [medicationHours, medicationMinutes] = medicationTime.split(':').map(Number);
-  
-    const currentTotalMinutes = currentHours * 60 + currentMinutes;
-    const medicationTotalMinutes = medicationHours * 60 + medicationMinutes;
-  
-    if (currentTotalMinutes > medicationTotalMinutes) {
-      console.log('Past Medication Time');
-      return 'past'; // La hora de medicación ya pasó
-    } else if (currentTotalMinutes === medicationTotalMinutes) {
-      console.log('Current Medication Time');
-      return 'current'; // Estamos en la hora de medicación actual
-    } else {
-      console.log('Future Medication Time');
-      return 'future'; // La hora de medicación es en el futuro
-    }
-  };
-
-  const renderMedication = (hour, medication, backgroundColor) => {
+  if (!paciente || !paciente.planFarmacologico) {
     return (
-      <View style={[styles.medicationItem, { backgroundColor }]} key={hour}>
-        <Text>{`${hour}: ${medication}`}</Text>
+      <View style={styles.container}>
+        <Text>Error: Estructura de datos del paciente incorrecta</Text>
       </View>
+    );
+  }
+
+  const renderMedicationItem = ({ item }) => {
+    const subtitle = paciente.planFarmacologico[item.subtitle];
+
+    return (
+      <Card style={styles.card}>
+        <Card.Title
+          title={item.title}
+          subtitle={subtitle || 'No especificado'}
+          left={(props) => (
+            <Avatar.Icon {...props} icon={() => <MaterialCommunityIcons name="pill" size={24} />} />
+          )}
+          right={(props) => (
+            <IconButton
+              {...props}
+              icon="dots-vertical"
+              onPress={() => navigation.navigate('DetailsPlanFarma', { paciente, horaMedicacion: item.subtitle })}
+            />
+          )}
+        />
+      </Card>
     );
   };
 
@@ -47,45 +43,34 @@ const PlanFarmacologicoScreen = ({ route }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{`Medicación de ${paciente.nombre}`}</Text>
       {paciente.planFarmacologico && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Plan Farmacológico:</Text>
-          {renderMedication('Mañana', paciente.planFarmacologico.manana, compareTimes(getCurrentTime(), paciente.planFarmacologico.manana))}
-          {renderMedication('Mediodía', paciente.planFarmacologico.mediodia, compareTimes(getCurrentTime(), paciente.planFarmacologico.mediodia))}
-          {renderMedication('Tarde', paciente.planFarmacologico.tarde, compareTimes(getCurrentTime(), paciente.planFarmacologico.tarde))}
-          {renderMedication('Noche', paciente.planFarmacologico.noche, compareTimes(getCurrentTime(), paciente.planFarmacologico.noche))}
-        </View>
+        <FlatList
+          data={[
+            { title: 'Mañana', subtitle: 'manana' },
+            { title: 'Mediodía', subtitle: 'mediodia' },
+            { title: 'Tarde', subtitle: 'tarde' },
+            { title: 'Noche', subtitle: 'noche' },
+          ]}
+          keyExtractor={(item) => item.title}
+          renderItem={renderMedicationItem}
+        />
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
+  card:{
+    marginBottom: 8,
+    marginTop:8,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  card: {
-    backgroundColor: '#fff',
+  container: {
+    flex: 1,
     padding: 15,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  medicationItem: {
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
   },
 });
 
