@@ -4,13 +4,17 @@ import { vivienda } from '../data/vivienda';
 import { TextInput, Button } from 'react-native-paper';
 
 const SelectPatientsScreen = ({ route, navigation }) => {
+  const { userData } = route.params;
+  const { lastName, firstName } = userData;
+  console.log("Nombre", lastName, firstName);
   const { house } = route.params;
+  
   const selectedHouse = vivienda.find((casa) => casa.nombre === house);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleSelectPatients = () => {
     if (selectedPatient) {
-      navigation.navigate('ManageUsers', { selectedPatient });
+      navigation.navigate('ManageUsers', { selectedPatient, userData });
     }
   };
 

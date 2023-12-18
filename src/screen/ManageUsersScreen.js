@@ -3,7 +3,12 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
 
+
 const ManageUsersScreen = ({ route, navigation }) => {
+  const { userData } = route.params;
+  const { lastName, firstName } = userData;
+  console.log("Nombre Manager", lastName, firstName);
+ 
   const { selectedPatient } = route.params;
   const [location, setLocation] = useState(null);
 
@@ -46,7 +51,9 @@ const ManageUsersScreen = ({ route, navigation }) => {
     };
 
     // Después de proporcionar asistencia, navega a la pantalla de inicio y pasa los datos del paciente
-    navigation.navigate('Home', { patientData: assistanceData });
+    navigation.navigate('Home', { userData, patientData: assistanceData });
+    
+
   };
 
   return (

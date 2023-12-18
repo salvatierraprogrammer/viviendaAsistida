@@ -1,19 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Modal, Button } from 'react-native-paper';
+import { Modal, Portal, Button } from 'react-native-paper';
 
 const ModalFinalizar = ({ visible, onConfirm, onCancel }) => {
   return (
-    <Modal
-      visible={visible}
-      onDismiss={onCancel}
-      transparent={true}
-      animationType="slide"
-    >
-      <View style={styles.modalContainer}>
+    <View>
+      <Modal
+        visible={visible}
+        onDismiss={onCancel}
+        animationType="slide"
+        modalStyle={{
+          borderRadius: 10,
+        }}
+      >
         <View style={styles.modalContent}>
           <Text style={styles.modalText}>
-            ¿Estás listo para finalizar tu turno?
+            Estás listo para finalizar tu turno?
           </Text>
           <View style={styles.modalButtons}>
             <Button
@@ -34,41 +36,32 @@ const ModalFinalizar = ({ visible, onConfirm, onCancel }) => {
             </Button>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalContent: {
     backgroundColor: '#fff',
     padding: 20,
+    margin: 30,
+    height: 250,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 10,
-    width: '80%',
   },
   modalText: {
     fontSize: 16,
     marginBottom: 20,
   },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
   cancelButton: {
-    flex: 1,
-    marginRight: 5,
+    marginTop: 10,
     backgroundColor: '#ff79c6',
   },
   confirmButton: {
-    flex: 1,
-    marginLeft: 5,
+    marginTop: 10,
     backgroundColor: '#4caf50',
   },
   buttonLabel: {

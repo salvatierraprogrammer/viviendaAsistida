@@ -1,22 +1,46 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { vivienda } from '../data/vivienda';
 
-const CardUltimaMedicacion = ({ route }) => {
-  // Datos de ejemplo (sustitúyelos con los datos reales)
-  const data = {
-    ultimaMedicacion: {
-      hora: "20:00:00",
-      fecha:"12/11/2023",
-      responsable: "Javier Milton",
-      imagen: "https://www.enfermeriayseguridaddelpaciente.com/wp-content/uploads/2020/12/medicacion.jpg",
-    },
-  };
+const CardUltimaMedicacion = ( ) => {
+  const navigation = useNavigation();
+  
+  // Function to get the last medication record
+  function getLastMedicationRecord() {
+    const allMedicationRecords = vivienda.flatMap(location =>
+      location.pacientes.flatMap(paciente =>
+        paciente.registroMedicacion || []
+      )
+    );
 
-  // Extraer datos de la última medicación
-  const { hora, responsable, imagen } = data.ultimaMedicacion;
+    const sortedRecords = allMedicationRecords.sort((a, b) => {
+      const dateA = new Date(`${a.fecha} ${a.hora}`);
+      const dateB = new Date(`${b.fecha} ${b.hora}`);
+      return dateB - dateA;
+    });
+
+    return sortedRecords[0] || null;
+  }
+
+  const lastMedicationRecord = getLastMedicationRecord();
+
+  if (!lastMedicationRecord) {
+    return (
+      <View style={styles.container}>
+        <Text>No medication records found.</Text>
+      </View>
+    );
+  }
+
+  const { hora, responsable, imagen } = lastMedicationRecord;
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.navigate('DetailsUltimaMEd')}
+
+    >
       <View style={styles.card}>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
@@ -28,12 +52,13 @@ const CardUltimaMedicacion = ({ route }) => {
             <Image
               source={{ uri: imagen }}
               style={styles.image}
+              resizeMode="cover"
               onError={(error) => console.error('Error loading image:', error)}
             />
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

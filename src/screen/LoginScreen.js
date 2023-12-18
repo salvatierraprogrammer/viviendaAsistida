@@ -1,36 +1,34 @@
 import React, { useState } from 'react';
 import { View, Pressable, Image, StyleSheet, Text } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
+import { users } from '../data/users';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Lógica de inicio de sesión (puedes implementarla según tus necesidades)
-    // Aquí deberías verificar las credenciales, por ejemplo, con una API o datos simulados.
-
-    // Simulación de roles basada en las credenciales (esto es solo un ejemplo, ajusta según tus necesidades)
-    const userRole = getUserRole(username, password);
-
-    // Redirige a la pantalla correspondiente según el rol
-    if (userRole === 'admin') {
-      navigation.navigate('AdminDashboard');
-    } else if (userRole === 'operator') {
-      navigation.navigate('SelectHouse');
+    const user = users.find(u => u.username === username && u.password === password);
+  
+    if (user) {
+      const userRole = user.role;
+  
+      if (userRole === 'admin') {
+        navigation.navigate('AdminDashboard');
+      } else if (userRole === 'operator') {
+        navigation.navigate('SelectHouse', { userData: user }); // Pass the specific user, not the entire users array
+      } else {
+        // Manejo para roles adicionales
+        console.log(`Usuario con rol ${userRole}`);
+      }
     } else {
-      // Manejo para credenciales incorrectas o rol no reconocido
-      console.log('Credenciales incorrectas o rol no reconocido');
+      // Manejo para credenciales incorrectas
+      console.log('Credenciales incorrectas');
     }
   };
-
-  // Función simulada para obtener el rol del usuario
-  const getUserRole = (username, password) => {
-    // Implementa la lógica real para obtener el rol del usuario
-    // Puedes obtener esta información después del inicio de sesión.
-    // Por ahora, simularemos que el usuario es un operador si el nombre de usuario es "operador"
-    return username.toLowerCase() === 'operador' ? 'operator' : 'admin';
-  };
+  const registre = () => {
+    
+  }
 
   return (
     <View style={styles.container}>
@@ -56,6 +54,15 @@ const LoginScreen = ({ navigation }) => {
        >
        Iniciar Sesión
       </Button>
+      <Button
+      mode="contained"
+      onPress={()=> navigation.navigate('RegistreScreen')}
+      style={styles.button}
+      labelStyle={styles.buttonText}
+       >
+      Crear cuenta
+      </Button>
+      
     </View>
   );
 };
@@ -77,8 +84,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    // marginTop: 10,
-    // // backgroundColor: 'blue',
+    marginTop: 10,
+    backgroundColor: '#5fbcc0',
     // borderRadius: 5,
   },
   buttonText: {

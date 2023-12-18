@@ -18,14 +18,39 @@ const PlanFarmacologicoScreen = ({ route }) => {
 
   const renderMedicationItem = ({ item }) => {
     const subtitle = paciente.planFarmacologico[item.subtitle];
-
+    const medicationHour = parseInt(subtitle, 10);
+  
+    // Obtener la hora actual
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+  
+    // Determinar si la medicación está cerca de ser tomada
+    const isNearMedicationTime = Math.abs(currentHour - medicationHour) <= 1;
+  
+    // Determinar si la medicación ya pasó
+    const hasPassedMedicationTime = currentHour > medicationHour;
+  
+    // Definir el color de fondo según la lógica
+    let backgroundColor;
+  
+    if (isNearMedicationTime) {
+      backgroundColor = '#90EE90';
+    } else if (hasPassedMedicationTime) {
+      // Puedes ajustar el valor de opacidad para hacer el color más claro o más fuerte
+      backgroundColor = 'rgba(255, 0, 0, 0.3)';
+    } else {
+      /* Color amarillo transparente con 50% de opacidad */
+      backgroundColor = 'rgba(255, 255, 0, 0.5)';
+    }
+  
     return (
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor }]}>
         <Card.Title
+         
           title={item.title}
           subtitle={subtitle || 'No especificado'}
           left={(props) => (
-            <Avatar.Icon {...props} icon={() => <MaterialCommunityIcons name="pill" size={24} />} />
+            <Avatar.Icon  style={styles.cardCircu}  {...props} icon={() => <MaterialCommunityIcons name="pill" size={24} color="white" />} />
           )}
           right={(props) => (
             <IconButton
@@ -35,6 +60,10 @@ const PlanFarmacologicoScreen = ({ route }) => {
             />
           )}
         />
+        {/* Mostrar un ícono de cámara de fotos si está cerca de la hora de la medicación y no ha pasado */}
+        {isNearMedicationTime && !hasPassedMedicationTime && (
+          <MaterialCommunityIcons name="camera" color="white" size={50} style={styles.cameraIcon} />
+        )}
       </Card>
     );
   };
@@ -59,9 +88,9 @@ const PlanFarmacologicoScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  card:{
+  card: {
     marginBottom: 8,
-    marginTop:8,
+    marginTop: 8,
   },
   title: {
     fontSize: 20,
@@ -72,6 +101,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
   },
+  cameraIcon: {
+    backgroundColor: 'green',
+    borderRadius: 12,
+    padding: 4,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  cardCircu: {
+    backgroundColor: '#5fbcc0',
+  },
+
 });
 
 export default PlanFarmacologicoScreen;

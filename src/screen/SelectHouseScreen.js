@@ -1,14 +1,17 @@
 import React from 'react';
 import { View, FlatList, Pressable, Text, StyleSheet } from 'react-native';
-import { vivienda } from '../data/vivienda';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { vivienda } from '../data/vivienda';  // Add this import statement
 
-const SelectHouseScreen = ({ navigation }) => {
+const SelectHouseScreen = ({ navigation, route }) => {
+  const { userData } = route.params;
+  const { lastName, firstName } = userData;
+  console.log("Nombre", lastName, firstName);
   const handleHouseSelection = (house) => {
     // Lógica de selección de casa (puedes implementarla según tus necesidades)
 
     // Después de seleccionar la casa, navegar a la pantalla de gestión de usuarios.
-    navigation.navigate('SelectPatients', { house });
+    navigation.navigate('SelectPatients', { house, userData });
   };
 
   const renderHouseButton = ({ item }) => (
@@ -24,6 +27,7 @@ const SelectHouseScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.welcomeText}>{`Bienvenido ${firstName} ${lastName}, selecciona una vivienda para comenzar la jornada laboral`}</Text>
       <FlatList
         data={vivienda}
         renderItem={renderHouseButton}
@@ -35,12 +39,15 @@ const SelectHouseScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     marginTop: 20,
   },
-
+  welcomeText: {
+    fontSize: 18,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
   button: {
-    // Style your button as needed
     margin: 10,
     borderRadius: 10,
     overflow: 'hidden',
@@ -50,7 +57,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
     width: '44%',
-    
   },
   houseName: {
     marginTop: 5,
