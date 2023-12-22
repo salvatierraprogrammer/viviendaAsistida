@@ -11,7 +11,7 @@ export default class AdminDashboard extends Component {
       opciones: [
         { id: 1, name: "Usuarios" },
         { id: 2, name: "Operadores" },
-        { id: 3, name: "Pacientes" },
+        // { id: 3, name: "Pacientes" },
       ],
     };
   }
@@ -48,7 +48,7 @@ export default class AdminDashboard extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Bienvenido, seleccione para comenzar</Text>
+        <Text style={styles.title}>Bienvenido, seleccione para comenzar</Text>
         <FlatList
           data={this.state.opciones}
           renderItem={this.renderOptionButton}
@@ -78,10 +78,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
     width: '44%',
+    height: 200,
   },
   optionText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
+  },
+  title:{
+    fontWeight: 'bold',
+    // fontFamily: 'bold',
+    fontSize: 18,
+    margin: 5,
+    padding: 10,
+    backgroundColor: '#5fbcc0',
+    width: '93%',
+    height: 50,
+    color: 'white',
+    borderRadius: 9,
+    textAlign: 'center',
+
   },
 });

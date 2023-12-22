@@ -21,13 +21,22 @@ import MapLocEntrada from '../screen/MapLocEntrada';
 import DetailsUsuarios from '../screen/DetailsUsuarios';
 import CardPlanFarmacologico from '../screen/CardPlanFarmacologico';
 import DetailsPlanFarmacologico from '../screen/DetailsPlanFarmacologico';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator()
 
 const RootNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Navigator initialRouteName="Login" >
+   <Stack.Screen
+  name="Login"
+  component={LoginScreen}
+  options={{
+    headerShown: false,
+    tabBarVisible: false,
+    gestureEnabled: false,
+  }}
+      />
       <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
       <Stack.Screen name='UsuariosScreen' component={UsuariosScreen} />
       <Stack.Screen name='OperadoresScreen' component={OperadoresScreen} />
@@ -38,15 +47,15 @@ const RootNavigation = () => {
       <Stack.Screen name='DetailsUsuarios' component={DetailsUsuarios}/>
       <Stack.Screen name='CardPlanFarmacologico' component={CardPlanFarmacologico}/>
       <Stack.Screen name='DetailsPlanFarmacologico' component={DetailsPlanFarmacologico}/>
-
-      <Stack.Screen name="SelectHouse" component={SelectHouseScreen} />
-      <Stack.Screen name="SelectPatients" component={SelectPatientsScreen} />
-      <Stack.Screen name="ManageUsers" component={ManageUsersScreen} />
+      
+      <Stack.Screen name="SelectHouse" component={SelectHouseScreen} options={{ headerShown: false, tabBarVisible: false }} />
+      <Stack.Screen name="SelectPatients" component={SelectPatientsScreen} options={{ headerShown: false, tabBarVisible: false }} />
+      <Stack.Screen name="ManageUsers" component={ManageUsersScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ headerLeft: () => null, // Esto quita el botón de retroceso
-        }}/>
+        options={{ headerLeft: null }}
+      />
       <Stack.Screen name="DetailsPlanFarma" component={DetailsPlanFarma} />
       <Stack.Screen name="DetailsUltimaMEd" component={DetailsUltimaMEd} />
       <Stack.Screen name="FinalizarJornada" component={FinalizarJornada} />

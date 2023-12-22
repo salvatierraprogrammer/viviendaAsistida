@@ -2,10 +2,22 @@ import React, { useState } from 'react';
 import { View, Pressable, Image, StyleSheet, Text } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { users } from '../data/users';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.setParams({ hideTabBar: true });
+      return () => {
+        navigation.setParams({ hideTabBar: false });
+      };
+    }, [navigation])
+  );
 
   const handleLogin = () => {
     const user = users.find(u => u.username === username && u.password === password);

@@ -43,7 +43,7 @@ const SelectPatientsScreen = ({ route, navigation }) => {
             'https://media.istockphoto.com/id/1397186871/es/vector/los-j%C3%B3venes-est%C3%A1n-parados-cerca-de-un-enorme-tel%C3%A9fono-inteligente-con-elementos-de-redes.jpg?s=612x612&w=0&k=20&c=MFHjki1qz3a75OrHxPYw1DvCibxi1xxCqM90Xw4uvy4=',
         }}
       />
-      <Text style={styles.houseTitle}>{`Pacientes de ${selectedHouse.nombre}`}</Text>
+      <Text style={styles.houseTitle}>{`Usuarios de ${selectedHouse.nombre}`}</Text>
       <FlatList
         data={selectedHouse.pacientes}
         renderItem={renderItem}
@@ -75,7 +75,9 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     textAlign: 'center',
     marginTop: 20,
+    
   },
+  
   patientItem: {
     padding: 10,
     marginVertical: 5,
@@ -84,6 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '80%',
     marginLeft: 30,
+    backgroundColor: 'white',
   },
   selectedPatientItem: {
     backgroundColor: '#ADD8E6',
@@ -97,10 +100,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 50,
     alignContent: 'center',
+    
+    
   },
   selectButtonText: {
     color: 'black',
     fontSize: 16,
+    
   },
 });
 
