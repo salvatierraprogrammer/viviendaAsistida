@@ -54,14 +54,11 @@ const LoginScreen = ({ navigation }) => {
        >
        Iniciar Sesión
       </Button>
-      <Button
-      mode="contained"
-      onPress={()=> navigation.navigate('RegistreScreen')}
-      style={styles.button}
-      labelStyle={styles.buttonText}
-       >
-      Crear cuenta
-      </Button>
+      <Pressable onPress={() => navigation.navigate('RegistreScreen')}>
+  <Text style={[styles.texto, { color: '#5fbcc0', marginTop: 20 }]}>
+    No tienes cuenta? Registrate
+  </Text>
+</Pressable>
       
     </View>
   );

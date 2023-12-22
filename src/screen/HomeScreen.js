@@ -1,45 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import { format } from 'date-fns';
-import { useNavigation } from '@react-navigation/native';
-import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
+import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 import { users } from '../data/users';
 
-const HomeScreen = ({navigation, route }) => {
+const HomeScreen = ({ navigation, route }) => {
   const { userData } = route.params;
   const { lastName, firstName } = userData;
   console.log("Nombre Home", lastName, firstName);
   const { patientData } = route.params;
-  
-
 
   const formattedTimestamp = patientData.timestamp
     ? format(new Date(patientData.timestamp), 'yyyy-MM-dd HH:mm:ss')
     : '';
 
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Datos del paciente:</Text>
+      <View style={styles.patientInfo}>
+        <Text style={styles.patientInfoText}>{`Nombre: ${item.nombre}`}</Text>
+        <Text style={styles.patientInfoText}>{`Edad: ${item.edad}`}</Text>
+        <Text style={styles.patientInfoText}>{`Diagnóstico: ${item.diagnostico}`}</Text>
+        {item.timestamp && (
+          <View style={styles.dateTimeContainer}>
+            <Text style={styles.patientInfoText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <CardBienvenida userData={userData}  />
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Datos del paciente:</Text>
-          <View style={styles.patientInfo}>
-            <Text style={styles.patientInfoText}>{`Nombre: ${patientData.nombre}`}</Text>
-            <Text style={styles.patientInfoText}>{`Edad: ${patientData.edad}`}</Text>
-            <Text style={styles.patientInfoText}>{`Diagnóstico: ${patientData.diagnostico}`}</Text>
-            {patientData.timestamp && (
-              <View style={styles.dateTimeContainer}>
-                <Text style={styles.patientInfoText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
-              </View>
-            )}
-         
-          </View>
-        </View>
-        <CardUltimaMedicacion />
-        <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
-      </ScrollView>
+      <FlatList
+        data={[patientData]}
+        keyExtractor={(item) => item.id.toString()} // Replace with the actual unique key
+        renderItem={renderItem}
+        ListHeaderComponent={() => <CardBienvenida userData={userData} />}
+        ListFooterComponent={() => (
+          <>
+            <CardUltimaMedicacion />
+            <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
+          </>
+        )}
+      />
     </SafeAreaView>
   );
 };
@@ -81,7 +87,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  
 });
 
 export default HomeScreen;

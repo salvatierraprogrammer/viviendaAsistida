@@ -39,7 +39,7 @@ const CardUltimaMedicacion = ( ) => {
     <TouchableOpacity
       style={styles.container}
       onPress={() => navigation.navigate('DetailsUltimaMEd')}
-
+      
     >
       <View style={styles.card}>
         <View style={styles.contentContainer}>

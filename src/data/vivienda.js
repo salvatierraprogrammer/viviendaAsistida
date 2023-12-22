@@ -5,7 +5,7 @@ export const vivienda = [
     pacientes: [
         {
           id: 1,
-          nombre: 'Paciente 1',
+          nombre: 'María Gómez',
           edad: 30,
           diagnostico: 'Enfermedad X',
           planFarmacologico: {
@@ -43,7 +43,7 @@ export const vivienda = [
         },
       {
         id: 2,
-        nombre: 'Paciente 2',
+        nombre: 'Juan Pérez',
         edad: 25,
         diagnostico: 'Enfermedad Y',
         planFarmacologico: {
@@ -75,26 +75,26 @@ export const vivienda = [
     pacientes: [
       {
         id: 3,
-        nombre: 'Paciente 3',
+        nombre: 'Diego Sánchez',
         edad: 40,
         diagnostico: 'Enfermedad Z',
         planFarmacologico: {
-          manana: '08:00:00 - 2mg Lorazepan, 1mg Respitidona',
-          mediodia: '12:00:00 - 1mg Aloperidol, 1/2mg Respitidona',
-          tarde: '16:00:00 - 1mg Lorazepan, 2mg Respitidona',
-          noche: '20:00:00 - 2mg Lorazepan, 1mg Respitidona',
+          manana: '08:00:00 - 2mg Lorazepan, - 1mg Respitidona',
+          mediodia: '12:00:00 - 1mg Aloperidol, - 1/2mg Respitidona',
+          tarde: '16:00:00 - 1mg Lorazepan, - 2mg Respitidona',
+          noche: '20:00:00 - 2mg Lorazepan, - 1mg Respitidona',
         },
       },
       {
         id: 4,
-        nombre: 'Paciente 4',
+        nombre: 'Lucas Fernández',
         edad: 35,
         diagnostico: 'Enfermedad W',
         planFarmacologico: {
-          manana: '07:00:00 - 2mg Lorazepan, 1mg Respitidona',
-          mediodia: '11:00:00 - 1mg Aloperidol, 1/2mg Respitidona',
-          tarde: '15:00:00 - 1mg Lorazepan, 2mg Respitidona',
-          noche: '19:00:00 - 2mg Lorazepan, 1mg Respitidona',
+          manana: '07:00:00 - 2mg Lorazepan, - 1mg Respitidona',
+          mediodia: '11:00:00 - 1mg Aloperidol, - 1/2mg Respitidona',
+          tarde: '15:00:00 - 1mg Lorazepan, - 2mg Respitidona',
+          noche: '19:00:00 - 2mg Lorazepan, - 1mg Respitidona',
         },
       },
     ],
@@ -105,19 +105,19 @@ export const vivienda = [
     pacientes: [
       {
         id: 5,
-        nombre: 'Paciente 5',
+        nombre: 'Valentina Rodríguez',
         edad: 40,
         diagnostico: 'Enfermedad Z',
         planFarmacologico: {
-          manana: '08:00:00, - 2mg Lorazepan, 1mg Respitidona',
-          mediodia: '12:00:00, - 1mg Aloperidol, 1/2mg Respitidona',
-          tarde: '16:00:00, - 1mg Lorazepan, 2mg Respitidona',
-          noche: '20:00:00,- 2mg Lorazepan, 1mg Respitidona',
+          manana: '08:00:00, - 2mg Lorazepan, - 1mg Respitidona',
+          mediodia: '12:00:00, - 1mg Aloperidol, - 1/2mg Respitidona',
+          tarde: '16:00:00, - 1mg Lorazepan, - 2mg Respitidona',
+          noche: '20:00:00,- 2mg Lorazepan, - 1mg Respitidona',
         },
       },
       {
         id: 6,
-        nombre: 'Paciente 6',
+        nombre: 'Laura López',
         edad: 35,
         diagnostico: 'Enfermedad W',
         planFarmacologico: {
@@ -135,26 +135,26 @@ export const vivienda = [
     pacientes: [
       {
         id: 7,
-        nombre: 'Paciente 7',
+        nombre: 'Sofía García',
         edad: 40,
         diagnostico: 'Enfermedad Z',
         planFarmacologico: {
-          manana: '08:00:00, - 2mg Lorazepan, 1mg Respitidona',
-          mediodia: '12:00:00, - 1mg Aloperidol, 1/2mg Respitidona',
-          tarde: '16:00:00, - 1mg Lorazepan, 2mg Respitidona',
-          noche: '20:00:00, - 2mg Lorazepan, 1mg Respitidona',
+          manana: '08:00:00, - 2mg Lorazepan, - 1mg Respitidona',
+          mediodia: '12:00:00, - 1mg Aloperidol, - 1/2mg Respitidona',
+          tarde: '16:00:00, - 1mg Lorazepan, - 2mg Respitidona',
+          noche: '20:00:00, - 2mg Lorazepan, - 1mg Respitidona',
         },
       },
       {
         id: 8,
-        nombre: 'Paciente 8',
+        nombre: 'Sebastián Gómez',
         edad: 35,
         diagnostico: 'Enfermedad W',
         planFarmacologico: {
-          manana: '07:00:00 - 2mg Lorazepan, 1mg Respitidona',
-          mediodia: '11:00:00 - 1mg Aloperidol, 1/2mg Respitidona',
-          tarde: '15:00:00 - 1mg Lorazepan, 2mg Respitidona',
-          noche: '19:00:00 - 2mg Lorazepan, 1mg Respitidona',
+          manana: '07:00:00 - 2mg Lorazepan, - 1mg Respitidona',
+          mediodia: '11:00:00 - 1mg Aloperidol, - 1/2mg Respitidona',
+          tarde: '15:00:00 - 1mg Lorazepan, - 2mg Respitidona',
+          noche: '19:00:00 - 2mg Lorazepan, - 1mg Respitidona',
         },
       },
     ],
