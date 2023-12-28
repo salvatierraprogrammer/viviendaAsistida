@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 8,
     marginTop: 8,
+    backgroundColor: 'white',
   },
   largeCard: {
     minHeight: 120,

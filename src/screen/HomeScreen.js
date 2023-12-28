@@ -5,11 +5,20 @@ import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 import { users } from '../data/users';
+import {useSelector} from 'react-redux';
+
 
 const HomeScreen = ({ navigation, route }) => {
+
+  
+  const vivienda = useSelector((state) => state.home.allVivienda);
+
+  console.log("Vivienda", vivienda);
+
+
   const { userData } = route.params;
   const { lastName, firstName } = userData;
-  console.log("Nombre Home", lastName, firstName);
+ 
   const { patientData } = route.params;
 
   const formattedTimestamp = patientData.timestamp

@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ccc',
     backgroundColor: 'white',
+    margin: 1,
   },
   operatorImage: {
     width: 50,

@@ -70,7 +70,7 @@ export const vivienda = [
     ],
   },
   {
-    id: 2,
+    id: 3,
     nombre: 'Arias Planta Alta',
     pacientes: [
       {

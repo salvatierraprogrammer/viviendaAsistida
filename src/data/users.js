@@ -67,8 +67,8 @@ export const users = [
     },
     { 
       id: 7,
-      username: 'op',
-      password: '12',
+      username: 'op1',
+      password: '123',
       role: 'operator',
       firstName: 'Leonardo',
       lastName: 'Burdof',
