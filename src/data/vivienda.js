@@ -56,7 +56,7 @@ export const vivienda = [
           {
             fecha: "01/01/2024",
             hora: "20:00:00",
-            responsable: "Javier Milton",
+            responsable: "Esteban Milton",
             imagen: "https://www.enfermeriayseguridaddelpaciente.com/wp-content/uploads/2020/12/medicacion.jpg",
           },
           {

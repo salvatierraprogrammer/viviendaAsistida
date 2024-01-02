@@ -3,9 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const DetailsPlanFarma = ({ route }) => {
-  const { paciente, horaMedicacion } = route.params;
+  const { selectedPatient, horaMedicacion } = route.params;
 
-  if (!paciente || !paciente.planFarmacologico) {
+  if (!selectedPatient || !selectedPatient.planFarmacologico) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Detalles de Medicación</Text>
@@ -14,7 +14,7 @@ const DetailsPlanFarma = ({ route }) => {
     );
   }
 
-  const medicacion = paciente.planFarmacologico[horaMedicacion];
+  const medicacion = selectedPatient.planFarmacologico[horaMedicacion];
 
   if (!medicacion) {
     return (
@@ -44,9 +44,9 @@ const DetailsPlanFarma = ({ route }) => {
       {/* <Text style={styles.title}>{`Detalles de Medicación - ${paciente.nombre}`}</Text> */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Datos del Paciente:</Text>
-        <Text>{`Nombre: ${paciente.nombre}`}</Text>
-        <Text>{`Edad: ${paciente.edad}`}</Text>
-        <Text>{`Diagnóstico: ${paciente.diagnostico || 'No especificado'}`}</Text>
+        <Text>{`Nombre: ${selectedPatient.nombre}`}</Text>
+        <Text>{`Edad: ${selectedPatient.edad}`}</Text>
+        <Text>{`Diagnóstico: ${selectedPatient.diagnostico || 'No especificado'}`}</Text>
       </View>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{`Medicación a las ${horaMedicacion}:`}</Text>

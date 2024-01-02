@@ -9,52 +9,53 @@ import {useSelector} from 'react-redux';
 
 
 const HomeScreen = ({ navigation, route }) => {
-
   
-  const vivienda = useSelector((state) => state.home.allVivienda);
-
-  console.log("Vivienda", vivienda);
-
+  // const vivienda = route.params.vivienda;
+  const { selectedPatient } = route.params;
 
   const { userData } = route.params;
   const { lastName, firstName } = userData;
  
-  const { patientData } = route.params;
 
-  const formattedTimestamp = patientData.timestamp
-    ? format(new Date(patientData.timestamp), 'yyyy-MM-dd HH:mm:ss')
-    : '';
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>Datos del paciente:</Text>
-      <View style={styles.patientInfo}>
-        <Text style={styles.patientInfoText}>{`Nombre: ${item.nombre}`}</Text>
-        <Text style={styles.patientInfoText}>{`Edad: ${item.edad}`}</Text>
-        <Text style={styles.patientInfoText}>{`Diagnóstico: ${item.diagnostico}`}</Text>
-        {item.timestamp && (
-          <View style={styles.dateTimeContainer}>
-            <Text style={styles.patientInfoText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
-          </View>
-        )}
+  const formattedTimestamp = selectedPatient && selectedPatient.timestamp
+  ? format(new Date(selectedPatient.timestamp), 'yyyy-MM-dd HH:mm:ss')
+  : '';
+
+
+    const renderItem = () => (
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Datos del paciente:</Text>
+        <View style={styles.patientInfo}>
+          <Text style={styles.patientInfoText}>{`Nombre: ${selectedPatient.nombre}`}</Text>
+          <Text style={styles.patientInfoText}>{`Edad: ${selectedPatient.edad}`}</Text>
+          <Text style={styles.patientInfoText}>{`Diagnóstico: ${selectedPatient.diagnostico}`}</Text>
+          {selectedPatient.timestamp && (
+            <View style={styles.dateTimeContainer}>
+              <Text style={styles.patientInfoText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
-  );
+    );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={[patientData]}
-        keyExtractor={(item) => item.id.toString()} // Replace with the actual unique key
-        renderItem={renderItem}
-        ListHeaderComponent={() => <CardBienvenida userData={userData} />}
-        ListFooterComponent={() => (
-          <>
-            <CardUltimaMedicacion />
-            <PlanFarmacologicoScreen route={{ params: { paciente: patientData } }} />
-          </>
-        )}
-      />
+  data={[selectedPatient]}
+  keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
+  renderItem={renderItem}
+  ListHeaderComponent={() => <CardBienvenida userData={userData} />}
+  ListFooterComponent={() => (
+    <>
+    <CardUltimaMedicacion selectedPatient={selectedPatient} />
+      <PlanFarmacologicoScreen route={{ params: {  selectedPatient} }} />
+
+
+
+    </>
+  )}
+/>
     </SafeAreaView>
   );
 };

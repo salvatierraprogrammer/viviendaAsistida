@@ -5,10 +5,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const PlanFarmacologicoScreen = ({ route }) => {
-  const { paciente } = route.params;
+  const { selectedPatient } = route.params;
   const navigation = useNavigation();
 
-  if (!paciente || !paciente.planFarmacologico) {
+  if (!selectedPatient || !selectedPatient.planFarmacologico) {
     return (
       <View style={styles.container}>
         <Text>Error: Estructura de datos del paciente incorrecta</Text>
@@ -17,7 +17,7 @@ const PlanFarmacologicoScreen = ({ route }) => {
   }
 
   const renderMedicationItem = ({ item }) => {
-    const subtitle = paciente.planFarmacologico[item.subtitle];
+    const subtitle = selectedPatient.planFarmacologico[item.subtitle];
     const medicationHour = parseInt(subtitle, 10);
   
     // Obtener la hora actual
@@ -56,7 +56,7 @@ const PlanFarmacologicoScreen = ({ route }) => {
             <IconButton
               {...props}
               icon="dots-vertical"
-              onPress={() => navigation.navigate('DetailsPlanFarma', { paciente, horaMedicacion: item.subtitle })}
+              onPress={() => navigation.navigate('DetailsPlanFarma', { selectedPatient, horaMedicacion: item.subtitle })}
             />
           )}
         />
@@ -70,8 +70,8 @@ const PlanFarmacologicoScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{`Medicación de ${paciente.nombre}`}</Text>
-      {paciente.planFarmacologico && (
+      <Text style={styles.title}>{`Medicación de ${selectedPatient.nombre}`}</Text>
+      {selectedPatient.planFarmacologico && (
         <FlatList
           data={[
             { title: 'Mañana', subtitle: 'manana' },

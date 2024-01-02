@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { vivienda } from '../data/vivienda';
 
-const CardUltimaMedicacion = ( ) => {
+const CardUltimaMedicacion = ({ selectedPatient }) => {
   const navigation = useNavigation();
   
   // Function to get the last medication record
   function getLastMedicationRecord() {
     const allMedicationRecords = vivienda.flatMap(location =>
-      location.pacientes.flatMap(paciente =>
-        paciente.registroMedicacion || []
+      location.pacientes.flatMap(selectedPatient =>
+        selectedPatient.registroMedicacion || []
       )
     );
 
@@ -38,7 +38,7 @@ const CardUltimaMedicacion = ( ) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('DetailsUltimaMEd')}
+      onPress={() => navigation.navigate('DetailsUltimaMEd', selectedPatient)}
       
     >
       <View style={styles.card}>

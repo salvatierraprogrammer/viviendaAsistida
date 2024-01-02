@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
-import { vivienda } from '../data/vivienda';
+// import { vivienda } from '../data/vivienda';
 import { TextInput, Button } from 'react-native-paper';
-
+import {useSelector} from 'react-redux';
 const SelectPatientsScreen = ({ route, navigation }) => {
+
+  
+  const vivienda = useSelector((state) => state.home.allVivienda);
   const { userData } = route.params;
   const { lastName, firstName } = userData;
   console.log("Nombre", lastName, firstName);

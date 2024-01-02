@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, FlatList, Pressable, Text, StyleSheet, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { vivienda } from '../data/vivienda';  // Add this import statement
+// import { vivienda } from '../data/vivienda';  // Add this import statement
+import {useSelector} from 'react-redux';
 
 const SelectHouseScreen = ({ navigation, route }) => {
+
+  const vivienda = useSelector((state) => state.home.allVivienda);
   const { userData } = route.params;
   const { lastName, firstName } = userData;
   console.log("Nombre", lastName, firstName);

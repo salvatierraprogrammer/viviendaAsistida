@@ -3,7 +3,10 @@ import { View, Text, StyleSheet, Image, FlatList, Modal, TouchableOpacity } from
 import { vivienda } from '../data/vivienda';
 import { ImageViewer } from 'react-native-image-zoom-viewer';
 
-const DetailsUltimaMEd = () => {
+const DetailsUltimaMEd = ({selectedPatient}) => {
+
+
+  console.log("List", selectedPatient);
   const [selectedImage, setSelectedImage] = useState(null);
 
   const allMedicationRecords = vivienda.flatMap(location =>
