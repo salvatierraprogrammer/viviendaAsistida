@@ -1,11 +1,10 @@
-// Importa las funciones necesarias de tus SDKs
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Pressable, Image, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { firebase_auth, app } from '../firebase/firebase_auth'; // Asegúrate de importar 'app' desde el módulo
-import { useGetUsuairiosQuery } from '../firebase/database';
+import { firebase_auth, app } from '../firebase/firebase_auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { useGetUsuariosQuery } from "../services/ecApi";
 
 const RegistreScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -14,7 +13,10 @@ const RegistreScreen = ({ navigation }) => {
   const [dni, setDni] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [userRole, setUserRol] = useState("2");
+  const [userRole, setUserRole] = useState(2);
+
+  const datos = useGetUsuariosQuery();
+  console.log(JSON.stringify(datos, null, ""));
 
   const handleRegistre = async () => {
     try {
@@ -22,33 +24,12 @@ const RegistreScreen = ({ navigation }) => {
         firebase_auth,
         email,
         password,
-      );
-  
-      // Obtén una referencia a Firestore
-      const db = getFirestore(app);
-
-      const userRef = doc(db, 'usuarios', response.user.uid);
-      await setDoc(userRef, {
-        nombre,
-        apellido,
-        dni,
-        phoneNumber,
-        userRole,
-      });
-      console.log("Valor de db:", db);
-      
-      console.log("Creación correcta:", response);
+      );  
       navigation.navigate("login");
     } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        Alert.alert("Registro fallido", "El correo electrónico ya está en uso. Por favor, inicia sesión en lugar de crear una nueva cuenta.");
-      } else {
-        Alert.alert("Registro fallido", error.message);
-      }
       console.error("Error al crear el usuario:", error);
     }
   };
- 
 
   return (
     <View style={styles.container}>
