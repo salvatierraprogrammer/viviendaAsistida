@@ -1,0 +1,1 @@
+export const base_url = "https://viviendaasistida-e8d8f-default-rtdb.firebaseio.com/";

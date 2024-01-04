@@ -5,10 +5,12 @@ import AuthNav from './AuthNav';
 import TabNav from './TabNav';
 const MainNav = () => {
   
+  const user = ""
+
   return (
     <NavigationContainer>
-      { checkedUser ? <TabNav/> : <AuthNav/> }
-      </NavigationContainer>
+      { user ? <TabNav/> : <AuthNav/> }
+    </NavigationContainer>
     );
   
 };

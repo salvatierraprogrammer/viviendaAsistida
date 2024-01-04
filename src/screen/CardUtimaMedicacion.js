@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { vivienda } from '../data/vivienda';
 
-const CardUltimaMedicacion = ({ selectedPatient }) => {
+const CardUltimaMedicacion = ({ selectedPatient  }) => {
   const navigation = useNavigation();
   
   // Function to get the last medication record
