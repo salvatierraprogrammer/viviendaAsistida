@@ -4,17 +4,17 @@ import { format } from 'date-fns';
 import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
-import { users } from '../data/users';
 import {useSelector} from 'react-redux';
-
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const HomeScreen = ({ navigation, route }) => {
   
   // const vivienda = route.params.vivienda;
   const { selectedPatient } = route.params;
 
-  const { userData } = route.params;
-  const { lastName, firstName } = userData;
+  // const { userData } = route.params;
+  // console.log("Que hay", userData);
+  // const { lastName, firstName } = userData;
  
 
 
@@ -45,7 +45,7 @@ const HomeScreen = ({ navigation, route }) => {
   data={[selectedPatient]}
   keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
   renderItem={renderItem}
-  ListHeaderComponent={() => <CardBienvenida userData={userData} />}
+  ListHeaderComponent={() => <CardBienvenida/>}
   ListFooterComponent={() => (
     <>
     <CardUltimaMedicacion selectedPatient={selectedPatient} />

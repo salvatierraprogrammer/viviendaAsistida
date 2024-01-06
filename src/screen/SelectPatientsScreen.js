@@ -6,10 +6,10 @@ import {useSelector} from 'react-redux';
 const SelectPatientsScreen = ({ route, navigation }) => {
 
   
-  const vivienda = useSelector((state) => state.home.allVivienda);
+  const vivienda = useSelector((state) => state.homeSlice.allVivienda);
   const { userData } = route.params;
-  const { lastName, firstName } = userData;
-  console.log("Nombre", lastName, firstName);
+  // const { lastName, firstName } = userData;
+  // console.log("Nombre", lastName, firstName);
   const { house } = route.params;
   
   const selectedHouse = vivienda.find((casa) => casa.nombre === house);

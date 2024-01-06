@@ -1,19 +1,30 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, FlatList, Pressable, Text, StyleSheet, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+
 // import { vivienda } from '../data/vivienda';  // Add this import statement
 import {useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { ecApi } from '../services/ecApi';
+import { getFirestore, doc, getDoc, collection } from 'firebase/firestore';
+
+
 
 const SelectHouseScreen = ({ navigation, route }) => {
+  const vivienda = useSelector((state) => state.homeSlice.allVivienda);
+  console.log("PARAm:", route);
+  const fetchedUserData = route.params ? route.params.fetchedUserData : null;
+  console.log("Fetched User Data:", fetchedUserData);
 
-  const vivienda = useSelector((state) => state.home.allVivienda);
-  const { userData } = route.params;
-  const { lastName, firstName } = userData;
-  console.log("Nombre", lastName, firstName);
+  const { nombre, apellido } = fetchedUserData || {};
+  console.log("Apellido:", apellido);
+  console.log("Users Usaurios:", fetchedUserData); 
+
+
   const handleHouseSelection = (house) => {
     // Lógica de selección de casa (puedes implementarla según tus necesidades)
     // Después de seleccionar la casa, navegar a la pantalla de gestión de usuarios.
-    navigation.navigate('SelectPatients', { house, userData });
+    navigation.navigate('SelectPatients', { house, fetchedUserData });
   };
 
   const renderHouseButton = ({ item }) => (
@@ -23,12 +34,15 @@ const SelectHouseScreen = ({ navigation, route }) => {
       onPress={() => handleHouseSelection(item.nombre)}
     >
       <FontAwesome5 name="house-user" size={24} color="black" />
+     
+
       <Text style={styles.houseName}>{item.nombre}</Text>
     </Pressable>
   );
 
   return (
     <View style={styles.container}>
+     
       <Image
           source={{
             uri:
@@ -42,6 +56,7 @@ const SelectHouseScreen = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
       />
+        <Text style={styles.welcomeText}>{`Bienvenido ${nombre} ${apellido}, selecciona una vivienda para comenzar la jornada laboral`}</Text>
     </View>
   );
 };

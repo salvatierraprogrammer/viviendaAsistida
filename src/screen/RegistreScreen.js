@@ -16,7 +16,7 @@ const RegistreScreen = ({ navigation }) => {
   const [userRole, setUserRole] = useState(2);
 
   const datos = useGetUsuariosQuery();
-  console.log(JSON.stringify(datos, null, ""));
+  // {console.log(JSON.stringify(datos, null, ""));}
 
   const handleRegistre = async () => {
     try {
@@ -24,7 +24,18 @@ const RegistreScreen = ({ navigation }) => {
         firebase_auth,
         email,
         password,
-      );  
+      );
+  
+      // Agregar el nuevo usuario a la base de datos
+      const db = getFirestore(app);
+      await setDoc(doc(db, 'usuarios', response.user.uid), {
+        nombre: nombre,
+        apellido: apellido,
+        dni: dni,
+        phoneNumber: phoneNumber,
+        userRole: userRole,
+      });
+  
       navigation.navigate("login");
     } catch (error) {
       console.error("Error al crear el usuario:", error);

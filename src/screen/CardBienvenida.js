@@ -1,32 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
-import { getUserInfo } from '../utils/userUtils';
 import { useNavigation } from '@react-navigation/native';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { firebase_auth, app } from '../firebase/firebase_auth';
 
-const CardBienvenida = ({ userData }) => {
-  const  navigation = useNavigation();
-  const { firstName, lastName, photoUrl } = getUserInfo(userData);
+const CardBienvenida = ({  }) => {
+  const navigation = useNavigation();
+  const [userData, getUserData] = useState("");
+  const [userDetails, setUserDetails] = useState(null);
+  
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        if (!userData) {
+          // Si userData no está disponible, maneja la lógica según tus necesidades
+          return;
+        }
+        // const db = getFirestore(app);
+        // const userDoc = await getDoc(doc(db, 'usuarios', response.user.uid));
+        // const fetchedUserData = userDoc.data(); 
+        const db = getFirestore(app);
+        const userDoc = doc(db, 'usuarios', userData.uid);
+        const userSnapshot = await getDoc(userDoc);
 
+        console.log("Document", userDoc);
+        console.log('User Snapshot:', userSnapshot.data());
+
+        if (userSnapshot.exists()) {
+          const userDataFromFirestore = userSnapshot.data();
+          setUserDetails(userDataFromFirestore);
+        } else {
+          console.warn('User does not exist in Firestore');
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [userData]);
+
+  console.log(userDetails);
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>¡Hola!</Text>
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.patientInfoText}>{`${firstName} ${lastName}`}</Text>
+        <Text style={styles.patientInfoText}>{`Bienvenido, ${userDetails?.nombre} ${userDetails?.apellido}`}</Text>
           <Pressable
-              style={({ pressed }) => [
-                styles.terminarHorarioButton,
-                { backgroundColor: pressed ? 'red' : 'green' },
-              ]}
-              onPress={() => navigation.navigate('FinalizarJornada')}
-            >
-              <Text style={styles.buttonText}>Terminar jornada</Text>
-            </Pressable>
+            style={({ pressed }) => [
+              styles.terminarHorarioButton,
+              { backgroundColor: pressed ? 'red' : 'green' },
+            ]}
+            onPress={() => navigation.navigate('FinalizarJornada')}
+          >
+            <Text style={styles.buttonText}>Terminar jornada</Text>
+          </Pressable>
         </View>
         <View style={styles.profileImageContainer}>
           <Image
-            source={{ uri: photoUrl }}
             style={styles.profileImage}
+            source={{ uri: userDetails?.photoUrl }}
           />
         </View>
       </View>

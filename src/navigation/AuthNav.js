@@ -12,6 +12,7 @@ const AuthNav  = () =>{
     
         <Stack.Navigator screenOptions={ { headerShown: false } }>
             <Stack.Screen name="login" component={LoginScreen} />
+            {/* <Stack.Screen name="SelectHouse" component={SelectHouseScreen} options={{ headerShown: false, tabBarVisible: false }} /> */}
             <Stack.Screen name="registreScreen" component={RegistreScreen} />
         </Stack.Navigator>
     )

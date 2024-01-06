@@ -7,9 +7,9 @@ import { useSelector } from 'react-redux';
 const ManageUsersScreen = ({ route, navigation }) => {
   const { selectedPatient } = route.params;
   console.log("Datos",selectedPatient )
-  const { userData } = route.params;
-  const { lastName, firstName } = userData;
-  console.log("Nombre Manager", lastName, firstName);
+  // const { userData } = route.params;
+  // const { lastName, firstName } = userData;
+  // console.log("Nombre Manager", lastName, firstName);
 
   const [location, setLocation] = useState(null);
 
@@ -55,7 +55,7 @@ const ManageUsersScreen = ({ route, navigation }) => {
       timestamp: formattedTime,
     };
 
-    navigation.navigate('Home', { userData, selectedPatient: assistanceData });
+    navigation.navigate('Home', { selectedPatient: assistanceData });
   };
 
   return (
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 50, // Hace que el botón sea redondo ajustando el radio del borde
     marginTop: 10,
+    backgroundColor: '#ADD8E6',
   },
   buttonText: {
     fontSize: 16,
