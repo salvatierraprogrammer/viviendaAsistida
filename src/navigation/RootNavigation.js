@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-
 import LoginScreen from '../screen/LoginScreen';  // Adjusted the import statement
 import AdminDashboard from '../screen/AdminDashboard';
 import SelectHouseScreen from '../screen/SelectHouseScreen';
@@ -22,30 +21,44 @@ import DetailsUsuarios from '../screen/DetailsUsuarios';
 import CardPlanFarmacologico from '../screen/CardPlanFarmacologico';
 import DetailsPlanFarmacologico from '../screen/DetailsPlanFarmacologico';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
+  const user = useSelector((state) => state.authSlice.user);
+
+  // Verifica si el usuario existe y tiene el rol 2
+  const isUserRole2 = user && user.userRole === 2;
   return (
     <Stack.Navigator initialRouteName="home" >
-   {/* <Stack.Screen
-  name="Login"
-  component={LoginScreen}
-  options={{
-    headerShown: false,
-    tabBarVisible: false,
-    gestureEnabled: false,
-  }}
-      /> */}
+      {/*Despues de login si es rol 2*/}
+      <Stack.Screen
+      name="SelectHouse"
+      component={SelectHouseScreen}
+      options={{ headerShown: false, tabBarVisible: false }}
+      screenOptions={{
+         tabBarVisible: false
+      }}
+    />
+    <Stack.Screen
+      name="SelectPatients"
+      component={SelectPatientsScreen}
+      options={{ headerShown: false, tabBarVisible: false }}
+    />
+    <Stack.Screen
+      name="ManageUsers"
+      component={ManageUsersScreen}
+      options={{ headerShown: false, tabBarVisible: false }}
+    />
 
+      
 
-<Stack.Screen name="SelectHouse" component={SelectHouseScreen} options={{ headerShown: false, tabBarVisible: false }} />
-      <Stack.Screen name="SelectPatients" component={SelectPatientsScreen} options={{ headerShown: false, tabBarVisible: false }} />
-      <Stack.Screen name="ManageUsers" component={ManageUsersScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="Home"
         component={HomeScreen}
         options={{ headerLeft: null }}
+        // options={{ headerShown: false, tabBarVisible: false }}
       />
       <Stack.Screen name="DetailsPlanFarma" component={DetailsPlanFarma} />
       <Stack.Screen name="DetailsUltimaMEd" component={DetailsUltimaMEd} />
@@ -72,4 +85,3 @@ const RootNavigation = () => {
 
 export default RootNavigation;
 
-const styles = StyleSheet.create({});

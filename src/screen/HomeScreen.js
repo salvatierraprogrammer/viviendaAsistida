@@ -9,13 +9,8 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const HomeScreen = ({ navigation, route }) => {
   
-  // const vivienda = route.params.vivienda;
   const { selectedPatient } = route.params;
 
-  // const { userData } = route.params;
-  // console.log("Que hay", userData);
-  // const { lastName, firstName } = userData;
- 
 
 
   const formattedTimestamp = selectedPatient && selectedPatient.timestamp
@@ -49,7 +44,7 @@ const HomeScreen = ({ navigation, route }) => {
   ListFooterComponent={() => (
     <>
     <CardUltimaMedicacion selectedPatient={selectedPatient} />
-      <PlanFarmacologicoScreen route={{ params: {  selectedPatient} }} />
+    <PlanFarmacologicoScreen route={{ params: {  selectedPatient} }} />
 
 
 

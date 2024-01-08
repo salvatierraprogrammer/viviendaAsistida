@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
-// import { vivienda } from '../data/vivienda';
+
 import { TextInput, Button } from 'react-native-paper';
 import {useSelector} from 'react-redux';
 const SelectPatientsScreen = ({ route, navigation }) => {
 
   
   const vivienda = useSelector((state) => state.homeSlice.allVivienda);
-  const { userData } = route.params;
-  // const { lastName, firstName } = userData;
-  // console.log("Nombre", lastName, firstName);
   const { house } = route.params;
   
   const selectedHouse = vivienda.find((casa) => casa.nombre === house);
@@ -17,7 +14,7 @@ const SelectPatientsScreen = ({ route, navigation }) => {
 
   const handleSelectPatients = () => {
     if (selectedPatient) {
-      navigation.navigate('ManageUsers', { selectedPatient, userData });
+      navigation.navigate('ManageUsers', { selectedPatient });
     }
   };
 

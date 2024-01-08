@@ -7,27 +7,48 @@
   import { AntDesign } from '@expo/vector-icons'; 
   import { MaterialCommunityIcons } from '@expo/vector-icons'; 
   import PerfileScreen from '../screen/PerfileScreen';
+  import { useNavigationState } from '@react-navigation/native';
+
 
   const Tab = createBottomTabNavigator(); // Define Tab here
 
-
   const TabNav = () => {
+    const navigationState = useNavigationState((state) => state);
+  
+    // Asegúrate de que navigationState esté definido y tenga las propiedades necesarias
+    const currentRoute = navigationState?.routes?.[navigationState?.index]?.name || null;
+  
+    // Lista de rutas que deben ocultar la barra de pestañas
+    const routesToHideTabBar = ['SelectHouse', 'SelectPatients', 'ManageUsers'];
+  
     return (
-      <Tab.Navigator screenOptions={{ title: "", headerShown: false }}>
-        <Tab.Screen 
-          options={{ tabBarIcon: ({ focused }) => <MaterialCommunityIcons name="clipboard-list-outline" size={24} color="black" /> }}
-          name="rootNavigation" 
-          component={RootNavigation} 
-        />
-        <Tab.Screen 
-          name="PerfileScreen" 
-          options={{ 
-            tabBarIcon: ({ focused }) => <MaterialCommunityIcons name="account-circle" size={24} color={focused ? 'blue' : 'black'} />,
+      <Tab.Navigator
+        screenOptions={{
+          title: "",
+          headerShown: false,
+          tabBarVisible: !routesToHideTabBar.includes(currentRoute),
+        }}
+      >
+        <Tab.Screen
+          name="rootNavigation"
+          component={RootNavigation}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons name="clipboard-list-outline" size={24} color={focused ? 'blue' : 'black'} />
+            ),
           }}
-          component={PerfileScreen} // Replace 'ProfileScreen' with the actual component for your profile screen
+        />
+        <Tab.Screen
+          name="PerfileScreen"
+          component={PerfileScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons name="account-circle" size={24} color={focused ? 'blue' : 'black'} />
+            ),
+          }}
         />
       </Tab.Navigator>
     );
   };
-
+  
   export default TabNav;

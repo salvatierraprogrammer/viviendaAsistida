@@ -3,31 +3,34 @@ import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { firebase_auth, app } from '../firebase/firebase_auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const CardBienvenida = ({  }) => {
   const navigation = useNavigation();
   const [userData, getUserData] = useState("");
   const [userDetails, setUserDetails] = useState(null);
-  
+  const [fetchedUserData, setFetchedUserData] = useState(null);
+
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchUserData = async () => {
       try {
-        if (!userData) {
-          // Si userData no está disponible, maneja la lógica según tus necesidades
-          return;
-        }
-        // const db = getFirestore(app);
-        // const userDoc = await getDoc(doc(db, 'usuarios', response.user.uid));
-        // const fetchedUserData = userDoc.data(); 
+        const storedUserData = await AsyncStorage.getItem('fetchedUserData');
+        const parsedUserData = JSON.parse(storedUserData);
+        setFetchedUserData(parsedUserData);
+  
+        // Obtener la información del usuario de Firestore
         const db = getFirestore(app);
-        const userDoc = doc(db, 'usuarios', userData.uid);
+        const userDoc = doc(db, 'usuarios', parsedUserData.uid);
         const userSnapshot = await getDoc(userDoc);
-
-        console.log("Document", userDoc);
-        console.log('User Snapshot:', userSnapshot.data());
-
+  
         if (userSnapshot.exists()) {
           const userDataFromFirestore = userSnapshot.data();
+          
+          // Almacena los detalles del usuario en AsyncStorage
+          await AsyncStorage.setItem('userDetails', JSON.stringify(userDataFromFirestore));
+  
+          // También podrías setear los detalles del usuario en el estado si es necesario
           setUserDetails(userDataFromFirestore);
         } else {
           console.warn('User does not exist in Firestore');
@@ -36,9 +39,12 @@ const CardBienvenida = ({  }) => {
         console.error('Error fetching user details:', error);
       }
     };
+  
+    fetchUserData();
+  }, []);
 
-    fetchUserDetails();
-  }, [userData]);
+  const { nombre, apellido } = fetchedUserData || {};
+
 
   console.log(userDetails);
   return (
@@ -46,7 +52,9 @@ const CardBienvenida = ({  }) => {
       <Text style={styles.cardTitle}>¡Hola!</Text>
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
-        <Text style={styles.patientInfoText}>{`Bienvenido, ${userDetails?.nombre} ${userDetails?.apellido}`}</Text>
+        <Text style={styles.patientInfoText}>{`Bienvenido:`}</Text>
+        <Text style={styles.patientInfoText}>{`${nombre || ''} ${apellido || ''}`}</Text>
+
           <Pressable
             style={({ pressed }) => [
               styles.terminarHorarioButton,
