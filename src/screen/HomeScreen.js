@@ -4,8 +4,6 @@ import { format } from 'date-fns';
 import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
-import {useSelector} from 'react-redux';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import CamaraScreen from './CamaraScreen';
 
 const HomeScreen = ({ navigation, route }) => {

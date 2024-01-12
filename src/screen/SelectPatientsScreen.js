@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
-
+import { useGetViviendaQuery } from '../services/ecApi';
 import { TextInput, Button } from 'react-native-paper';
 import {useSelector} from 'react-redux';
+
+
 const SelectPatientsScreen = ({ route, navigation }) => {
 
-  
-  const vivienda = useSelector((state) => state.homeSlice.allVivienda);
+  const { data: vivienda, isLoading, isError, error, } = useGetViviendaQuery();
+  // const vivienda = useSelector((state) => state.homeSlice.allVivienda);
   const { house } = route.params;
   
   const selectedHouse = vivienda.find((casa) => casa.nombre === house);

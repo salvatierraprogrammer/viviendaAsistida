@@ -26,7 +26,21 @@ export const ecApi = createApi({
           body: image,
         }),
   }),
-}),
+   // Guardar en Firebase Realtime Database
+    saveAssistance: builder.mutation({
+      query: (assistanceData) => ({
+        url: "asistencias.json", // Ajusta la ruta según tu estructura de base de datos
+        method: "POST",
+        body: assistanceData,
+      }),
+    }),
+  }),
 });
 
-export const { useGetUsuariosQuery, useGetImageQuery, usePutImageMutation, useGetViviendaQuery } = ecApi;
+export const {
+  useGetUsuariosQuery,
+  useGetImageQuery,
+  usePutImageMutation,
+  useGetViviendaQuery,
+  useSaveAssistanceMutation, // Agrega la nueva mutación
+} = ecApi;

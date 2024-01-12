@@ -1,53 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator  } from 'react-native';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
 import { useSelector } from 'react-redux';
+import { useSaveAssistanceMutation } from '../services/ecApi';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 const ManageUsersScreen = ({ route, navigation }) => {
   const { selectedPatient } = route.params;
-  console.log("Datos",selectedPatient )
-  // const { userData } = route.params;
-  // const { lastName, firstName } = userData;
-  // console.log("Nombre Manager", lastName, firstName);
-
   const [location, setLocation] = useState(null);
+  const [loadingLocation, setLoadingLocation] = useState(true);
+  const { mutate: saveAssistance, isLoading: isSavingAssistance } = useSaveAssistanceMutation();
 
-  // Función para obtener la ubicación del dispositivo
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log('Estado del permiso:', status);
-  
+
       if (status !== 'granted') {
         console.error('Permiso de ubicación denegado');
+        setLoadingLocation(false);
         return;
       }
-  
+
       let location = await Location.getCurrentPositionAsync({});
       console.log('Ubicación actual:', location);
-  
       setLocation(location);
     } catch (error) {
       console.error('Error al obtener la ubicación:', error);
+    } finally {
+      setLoadingLocation(false);
     }
   };
+
   useEffect(() => {
-    // Obtén la ubicación cuando el componente se monte
     getLocation();
   }, []);
 
   const handleAssistance = async () => {
     if (!location) {
       console.error('La ubicación no está disponible.');
-      // Si la ubicación no está disponible, puedes mostrar un mensaje al usuario
       return;
     }
 
-    const timestamp = new Date();
-    const offset = -3 * 60;
-    const timestampWithOffset = new Date(timestamp.getTime() + offset * 60000);
-    const formattedTime = timestampWithOffset.toISOString();
+    // Obtén la fecha y hora actual en UTC
+    const currentUtcTime = new Date();
+
+    // Convierte la fecha y hora a la zona horaria de Buenos Aires (America/Argentina/Buenos_Aires)
+    const formattedTime = format(utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'), "yyyy-MM-dd'T'HH:mm:ssXXX");
 
     const assistanceData = {
       ...selectedPatient,
@@ -55,7 +54,12 @@ const ManageUsersScreen = ({ route, navigation }) => {
       timestamp: formattedTime,
     };
 
-    navigation.navigate('Home', { selectedPatient: assistanceData });
+    try {
+      await saveAssistance(assistanceData);
+      navigation.navigate('Home', { selectedPatient: assistanceData });
+    } catch (error) {
+      console.error('Error al guardar la asistencia:', error);
+    }
   };
 
   return (
@@ -66,21 +70,26 @@ const ManageUsersScreen = ({ route, navigation }) => {
       />
       <Text style={styles.title}>Registro de Asistencia</Text>
 
-      <View style={styles.buttonContainer}>
-        <Button
-          icon="chevron-right"
-          mode="contained"
-          onPress={handleAssistance}
-          style={styles.button}
-          labelStyle={styles.buttonText}
-        >
-          Proporcionar Asistencia
-        </Button>
-      </View>
-      {/* Agrega más funcionalidades según sea necesario */}
+      {loadingLocation ? (
+        <ActivityIndicator size="large" color="#ADD8E6" />
+      ) : (
+        <View style={styles.buttonContainer}>
+          <Button
+            icon="chevron-right"
+            mode="contained"
+            onPress={handleAssistance}
+            style={styles.button}
+            labelStyle={styles.buttonText}
+            disabled={isSavingAssistance}
+          >
+            Proporcionar Asistencia
+          </Button>
+        </View>
+      )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -95,10 +104,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '80%',
-    alignItems: 'center', // Alinea la imagen y el botón en el centro horizontal
+    alignItems: 'center',
   },
   button: {
-    borderRadius: 50, // Hace que el botón sea redondo ajustando el radio del borde
+    borderRadius: 50,
     marginTop: 10,
     backgroundColor: '#ADD8E6',
   },
@@ -106,9 +115,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   image: {
-    width: 150, // Ajusta el ancho de la imagen según tus necesidades
-    height: 150, // Ajusta la altura de la imagen según tus necesidades
-    marginBottom: 10, // Agrega un margen inferior para separar la imagen del botón
+    width: 150,
+    height: 150,
+    marginBottom: 10,
   },
 });
 

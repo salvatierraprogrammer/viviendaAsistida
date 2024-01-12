@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, Modal, TouchableOpacity } from 'react-native';
-import { vivienda } from '../data/vivienda';
 import { ImageViewer } from 'react-native-image-zoom-viewer';
 
 const DetailsUltimaMEd = ({ route }) => {

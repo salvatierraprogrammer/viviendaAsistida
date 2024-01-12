@@ -1,18 +1,15 @@
 import React, {useEffect} from 'react';
 import { View, FlatList, Pressable, Text, StyleSheet, Image, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import {useSelector} from 'react-redux';
-import { useNavigation } from '@react-navigation/native'; 
-import { ecApi } from '../services/ecApi';
 import { useGetViviendaQuery } from '../services/ecApi';
 
 
 
 
 const SelectHouseScreen = ({ navigation, route }) => {
-  const vivienda = useSelector((state) => state.homeSlice.allVivienda);
-  const { data: data, isLoading } = useGetViviendaQuery();
-  console.log("dara: ",data)
+  // const vivienda = useSelector((state) => state.homeSlice.allVivienda);
+  const { data: vivienda, isLoading, isError, error, } = useGetViviendaQuery();
+
   const handleHouseSelection = (house) => {
     navigation.navigate('SelectPatients', { house });
   };

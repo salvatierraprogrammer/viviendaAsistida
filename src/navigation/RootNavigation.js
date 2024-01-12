@@ -66,7 +66,7 @@ const RootNavigation = () => {
 
   const { userRole } = fetchedUserData || {};
   // Verifica si el usuario existe y tiene el rol 2
-  const isUserRole2 = user && user.userRole === 2;
+ console.log("Rol del usuario: ", userRole);
   return (
     <Stack.Navigator initialRouteName="home" >
       {/*Despues de login si es rol 2*/}
@@ -103,7 +103,7 @@ const RootNavigation = () => {
       <Stack.Screen name="FinalizarJornada" component={FinalizarJornada} />
 
       {/* Rol: 1 Admin */}
-      {/* <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
+      <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
       <Stack.Screen name='UsuariosScreen' component={UsuariosScreen} />
       <Stack.Screen name='OperadoresScreen' component={OperadoresScreen} />
       <Stack.Screen name='DetailsOperador' component={DetailsOperador} />
@@ -112,7 +112,7 @@ const RootNavigation = () => {
       <Stack.Screen name='MapLocEntrada' component={MapLocEntrada} />
       <Stack.Screen name='DetailsUsuarios' component={DetailsUsuarios}/>
       <Stack.Screen name='CardPlanFarmacologico' component={CardPlanFarmacologico}/>
-      <Stack.Screen name='DetailsPlanFarmacologico' component={DetailsPlanFarmacologico}/> */}
+      <Stack.Screen name='DetailsPlanFarmacologico' component={DetailsPlanFarmacologico}/>
       
     
      
