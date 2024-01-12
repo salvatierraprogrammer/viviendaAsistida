@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CardBienvenida = ({  }) => {
   const navigation = useNavigation();
-  const [userData, getUserData] = useState("");
+  // const [userData, getUserData] = useState("");
   const [userDetails, setUserDetails] = useState(null);
   const [fetchedUserData, setFetchedUserData] = useState(null);
 

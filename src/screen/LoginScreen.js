@@ -44,9 +44,9 @@ const handleLogin = async () => {
     if (fetchedUserData && fetchedUserData.userRole) {
       const userRole = fetchedUserData.userRole;
 
-      if (userRole === '1') {
+      if (userRole === 1) {
         navigation.navigate('AdminDashboard');
-      } else if (userRole === '2') {
+      } else if (userRole === 2) {
         navigation.navigate('SelectHouseScreen');
       } else {
         console.log(`Usuario con rol ${userRole}`);

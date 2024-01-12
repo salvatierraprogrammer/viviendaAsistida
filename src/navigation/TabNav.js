@@ -1,4 +1,4 @@
-  import { StyleSheet, Text, View } from 'react-native'
+
   import React from 'react'
   import RootNavigation from './RootNavigation';
   import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,6 +7,7 @@
   import { AntDesign } from '@expo/vector-icons'; 
   import { MaterialCommunityIcons } from '@expo/vector-icons'; 
   import PerfileScreen from '../screen/PerfileScreen';
+  import HomeScreen from '../screen/HomeScreen';
   import { useNavigationState } from '@react-navigation/native';
 
 
@@ -15,22 +16,18 @@
   const TabNav = () => {
     const navigationState = useNavigationState((state) => state);
   
-    // Asegúrate de que navigationState esté definido y tenga las propiedades necesarias
-    const currentRoute = navigationState?.routes?.[navigationState?.index]?.name || null;
-  
-    // Lista de rutas que deben ocultar la barra de pestañas
-    const routesToHideTabBar = ['SelectHouse', 'SelectPatients', 'ManageUsers'];
+
   
     return (
       <Tab.Navigator
         screenOptions={{
           title: "",
           headerShown: false,
-          tabBarVisible: !routesToHideTabBar.includes(currentRoute),
+         
         }}
       >
         <Tab.Screen
-          name="rootNavigation"
+          name="HomeScreen"
           component={RootNavigation}
           options={{
             tabBarIcon: ({ focused }) => (

@@ -27,7 +27,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-localization"
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La app requiere acceso a tu galeria de foto"
+        }
+      ]
     ]
+  
   }
 }

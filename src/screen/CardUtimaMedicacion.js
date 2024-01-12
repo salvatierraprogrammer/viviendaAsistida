@@ -1,20 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { vivienda } from '../data/vivienda';
 
-const CardUltimaMedicacion = ({ selectedPatient  }) => {
+const CardUltimaMedicacion = ({ selectedPatient }) => {
   const navigation = useNavigation();
-  
-  // Function to get the last medication record
-  function getLastMedicationRecord() {
-    const allMedicationRecords = vivienda.flatMap(location =>
-      location.pacientes.flatMap(selectedPatient =>
-        selectedPatient.registroMedicacion || []
-      )
-    );
 
-    const sortedRecords = allMedicationRecords.sort((a, b) => {
+  // Function to get the last medication record for the selected patient
+  function getLastMedicationRecord() {
+    const { registroMedicacion } = selectedPatient;
+
+    if (!registroMedicacion || registroMedicacion.length === 0) {
+      return null;
+    }
+
+    const sortedRecords = registroMedicacion.sort((a, b) => {
       const dateA = new Date(`${a.fecha} ${a.hora}`);
       const dateB = new Date(`${b.fecha} ${b.hora}`);
       return dateB - dateA;
@@ -24,27 +23,31 @@ const CardUltimaMedicacion = ({ selectedPatient  }) => {
   }
 
   const lastMedicationRecord = getLastMedicationRecord();
+  
 
   if (!lastMedicationRecord) {
     return (
       <View style={styles.container}>
-        <Text>No medication records found.</Text>
+        <Text>No hay registros de medicación para este paciente.</Text>
       </View>
     );
   }
 
   const { hora, responsable, imagen } = lastMedicationRecord;
-
+  const handlePress = () => {
+    navigation.navigate('DetailsUltimaMEd', {
+      selectedPatient: selectedPatient, // Puedes pasar más información si es necesario
+    });
+  };
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('DetailsUltimaMEd', selectedPatient)}
-      
+      onPress={handlePress}
     >
       <View style={styles.card}>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <Text style={styles.cardTitle}>Ultima medicación:</Text>
+            <Text style={styles.cardTitle}>Última medicación:</Text>
             <Text style={styles.patientInfoText}>{`Hora: ${hora}`}</Text>
             <Text style={styles.patientInfoText}>{`Responsable: ${responsable}`}</Text>
           </View>

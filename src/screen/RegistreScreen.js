@@ -13,7 +13,7 @@ const RegistreScreen = ({ navigation }) => {
   const [dni, setDni] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [userRole, setUserRole] = useState(2);
+  const [userRole, setUserRole] = useState(1);
 
   const datos = useGetUsuariosQuery();
   // {console.log(JSON.stringify(datos, null, ""));}

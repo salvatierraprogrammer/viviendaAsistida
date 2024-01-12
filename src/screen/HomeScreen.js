@@ -6,6 +6,7 @@ import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 import {useSelector} from 'react-redux';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import CamaraScreen from './CamaraScreen';
 
 const HomeScreen = ({ navigation, route }) => {
   
@@ -43,6 +44,7 @@ const HomeScreen = ({ navigation, route }) => {
   ListHeaderComponent={() => <CardBienvenida/>}
   ListFooterComponent={() => (
     <>
+    <CamaraScreen/>
     <CardUltimaMedicacion selectedPatient={selectedPatient} />
     <PlanFarmacologicoScreen route={{ params: {  selectedPatient} }} />
 

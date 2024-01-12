@@ -3,21 +3,18 @@ import { View, Text, StyleSheet, Image, FlatList, Modal, TouchableOpacity } from
 import { vivienda } from '../data/vivienda';
 import { ImageViewer } from 'react-native-image-zoom-viewer';
 
-const DetailsUltimaMEd = ({selectedPatient}) => {
-
-
+const DetailsUltimaMEd = ({ route }) => {
+  const { selectedPatient } = route.params;
   console.log("List", selectedPatient);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const allMedicationRecords = vivienda.flatMap(location =>
-    location.pacientes.flatMap(paciente => paciente.registroMedicacion || [])
-  );
+  // Filtrar los registros de medicación del paciente seleccionado
+  const medicationRecords = selectedPatient?.registroMedicacion || [];
 
   const openImageModal = (image) => {
     setSelectedImage(image);
   };
 
-  
   const closeImageModal = () => {
     console.log('Close Image Modal');
     setSelectedImage(null);
@@ -36,15 +33,15 @@ const DetailsUltimaMEd = ({selectedPatient}) => {
 
   const CustomHeader = () => (
     <TouchableOpacity onPress={closeImageModal} style={[styles.closeButton, { padding: 20 }]}>
-     <Text style={styles.closeButtonText}>Cerrar</Text>
+      <Text style={styles.closeButtonText}>Cerrar</Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      {allMedicationRecords.length > 0 ? (
+      {medicationRecords.length > 0 ? (
         <FlatList
-          data={allMedicationRecords}
+          data={medicationRecords}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -60,7 +57,7 @@ const DetailsUltimaMEd = ({selectedPatient}) => {
           )}
         />
       ) : (
-        <Text>No hay registros de medicación.</Text>
+        <Text>No hay registros de medicación para este paciente.</Text>
       )}
 
       <Modal visible={selectedImage !== null} transparent={true}>
