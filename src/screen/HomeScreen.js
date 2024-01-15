@@ -9,11 +9,14 @@ import CamaraScreen from './CamaraScreen';
 const HomeScreen = ({ navigation, route }) => {
   
   const { selectedPatient } = route.params;
+  const { assistanceDataToSend } = route.params;
+  
 
+  console.log("Datos del paciente", selectedPatient);
+  console.log("Datos de ingreso: ", assistanceDataToSend);
 
-
-  const formattedTimestamp = selectedPatient && selectedPatient.timestamp
-  ? format(new Date(selectedPatient.timestamp), 'yyyy-MM-dd HH:mm:ss')
+  const formattedTimestamp = assistanceDataToSend && assistanceDataToSend.fechaIngreso
+  ? format(new Date(assistanceDataToSend.fechaIngreso), 'yyyy-MM-dd HH:mm:ss')
   : '';
 
 
@@ -24,7 +27,7 @@ const HomeScreen = ({ navigation, route }) => {
           <Text style={styles.patientInfoText}>{`Nombre: ${selectedPatient.nombre}`}</Text>
           <Text style={styles.patientInfoText}>{`Edad: ${selectedPatient.edad}`}</Text>
           <Text style={styles.patientInfoText}>{`Diagnóstico: ${selectedPatient.diagnostico}`}</Text>
-          {selectedPatient.timestamp && (
+          {assistanceDataToSend && assistanceDataToSend.fechaIngreso && (
             <View style={styles.dateTimeContainer}>
               <Text style={styles.patientInfoText}>{`Horario de Asistencia: ${formattedTimestamp}`}</Text>
             </View>
@@ -59,11 +62,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    marginTop: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 25,
     textAlign: 'center',
   },
   card: {

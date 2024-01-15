@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator  } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
-import { useSelector } from 'react-redux';
 import { useSaveAssistanceMutation } from '../services/ecApi';
+import { app } from '../firebase/firebase_auth';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { format, utcToZonedTime } from 'date-fns-tz';
 
 const ManageUsersScreen = ({ route, navigation }) => {
   const { selectedPatient } = route.params;
   const [location, setLocation] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(true);
-  const { mutate: saveAssistance, isLoading: isSavingAssistance } = useSaveAssistanceMutation();
+  const saveAssistanceMutation = useSaveAssistanceMutation();
 
   const getLocation = async () => {
     try {
@@ -41,31 +42,54 @@ const ManageUsersScreen = ({ route, navigation }) => {
       console.error('La ubicación no está disponible.');
       return;
     }
-
-    // Obtén la fecha y hora actual en UTC
+  
+    const assistanceLocation = location;
     const currentUtcTime = new Date();
 
     // Convierte la fecha y hora a la zona horaria de Buenos Aires (America/Argentina/Buenos_Aires)
     const formattedTime = format(utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'), "yyyy-MM-dd'T'HH:mm:ssXXX");
-
-    const assistanceData = {
-      ...selectedPatient,
-      location,
-      timestamp: formattedTime,
+  
+    // Crear un nuevo objeto con los datos específicos que deseas pasar
+    const assistanceDataToSend = {
+      id: selectedPatient.id,
+      fechaIngreso: formattedTime,
+      ubicacionIngreso: assistanceLocation,
     };
-
+  
+    console.log('Datos antes de guardar:', assistanceDataToSend);
+  
+    // Indicar que se están guardando los datos
+    setLoadingLocation(true);
+  
+    // Guardar solo fecha, hora e ubicación en Firebase Firestore
     try {
-      await saveAssistance(assistanceData);
-      navigation.navigate('Home', { selectedPatient: assistanceData });
+      const db = getFirestore(app);
+      const userCollection = collection(db, 'usuarios');
+  
+      // Agregar un nuevo registro con la fecha de ingreso y ubicación de ingreso
+      const docRef = await addDoc(userCollection, { ...selectedPatient, ...assistanceDataToSend });
+  
+      console.log('Datos guardados en Firebase Firestore con ID:', docRef.id);
+  
+      // Navegar a la pantalla de inicio después de guardar con éxito
+      navigation.navigate('Home', {
+        selectedPatient: selectedPatient,
+        assistanceDataToSend,
+      });
     } catch (error) {
       console.error('Error al guardar la asistencia:', error);
+    } finally {
+      // Finalizar indicación de que se están guardando los datos
+      setLoadingLocation(false);
     }
   };
 
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'https://cdn.icon-icons.com/icons2/1585/PNG/512/3709730-assistance-call-centre-help-service_108075.png' }}
+        source={{
+          uri: 'https://cdn.icon-icons.com/icons2/1585/PNG/512/3709730-assistance-call-centre-help-service_108075.png',
+        }}
         style={styles.image}
       />
       <Text style={styles.title}>Registro de Asistencia</Text>
@@ -80,7 +104,7 @@ const ManageUsersScreen = ({ route, navigation }) => {
             onPress={handleAssistance}
             style={styles.button}
             labelStyle={styles.buttonText}
-            disabled={isSavingAssistance}
+            disabled={saveAssistanceMutation.isLoading}
           >
             Proporcionar Asistencia
           </Button>
@@ -89,7 +113,6 @@ const ManageUsersScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

@@ -1,26 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { format, utcToZonedTime } from 'date-fns-tz';
+import * as Location from 'expo-location';  // Asumiendo que ya tienes esta importación
+import { useNavigation } from '@react-navigation/native';
 
 const FinalizarJornada = () => {
-  const confirmarTerminarJornada = () => {
-    Alert.alert(
-      'Confirmación',
-      '¿Estás seguro de que deseas terminar la jornada?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Confirmar',
-          onPress: () => {
-            // Agrega aquí la lógica para finalizar la jornada
-            console.log('Jornada terminada');
+  const [location, setLocation] = useState(null);
+  const navigation = useNavigation();
+  
+
+  const confirmarTerminarJornada = async () => {
+    try {
+      // Obtener la ubicación
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        console.error('Permiso de ubicación denegado');
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+
+      // Obtener la fecha y hora actual
+      const currentUtcTime = new Date();
+
+      // Convierte la fecha y hora a la zona horaria de Buenos Aires (America/Argentina/Buenos_Aires)
+      const formattedTime = format(utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'), "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+      // Agrega aquí la lógica para guardar la fecha de salida y la ubicación de salida
+      console.log('Fecha de salida:', formattedTime);
+      console.log('Ubicación de salida:', currentLocation);
+
+      // Lógica adicional según tus necesidades (puedes guardar esto en Firebase, por ejemplo)
+      
+      // Mostrar la confirmación
+      Alert.alert(
+        'Confirmación',
+        'Jornada terminada',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
           },
-        },
-      ],
-      { cancelable: false }
-    );
+          {
+            text: 'OK',
+            onPress: () => {
+              // Puedes agregar aquí la navegación o cualquier otra lógica adicional después de la confirmación
+              navigation.navigate('SelectHouse');
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      console.error('Error al finalizar la jornada:', error);
+    }
   };
 
   return (
