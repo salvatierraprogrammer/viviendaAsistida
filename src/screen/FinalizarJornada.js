@@ -4,54 +4,58 @@ import { format, utcToZonedTime } from 'date-fns-tz';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 import { app } from '../firebase/firebase_auth';
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-} from 'firebase/firestore';
-
-const FinalizarJornada = ({ userId }) => {
+const FinalizarJornada = ({ route }) => {
   const [location, setLocation] = useState(null);
   const navigation = useNavigation();
+  const { userId } = route.params;
 
   const confirmarTerminarJornada = async () => {
     try {
       // Obtener la ubicación
       let { status } = await Location.requestForegroundPermissionsAsync();
-
+  
       if (status !== 'granted') {
         console.error('Permiso de ubicación denegado');
         return;
       }
-
+  
       let currentLocation = await Location.getCurrentPositionAsync({});
       setLocation(currentLocation);
-
+  
       // Obtener la fecha y hora actual
       const currentUtcTime = new Date();
       const formattedTime = format(
         utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'),
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
-
-      // Referencia a la colección "usuarios"
+  
+      // Referencia a la colección "asistencias"
       const db = getFirestore(app);
-      const usuariosCollection = collection(db, 'usuarios');
-
-      // Datos de la jornada
-      const jornadaData = {
-        fechaFin: formattedTime,
-        ubicacionFin: {
-          latitude: currentLocation.coords.latitude,
-          longitude: currentLocation.coords.longitude,
-        },
-      };
-
-      // Agregar un nuevo documento a la colección "usuarios"
-      const nuevoDocumento = await addDoc(usuariosCollection, jornadaData);
-
-    
+      const asistenciasCollection = collection(db, 'asistencias');
+  
+      // Consultar el documento existente basado en userId
+      const querySnapshot = await getDocs(
+        query(asistenciasCollection, where('userId', '==', userId))
+      );
+  
+      if (!querySnapshot.empty) {
+        // Si el documento existe, actualizarlo
+        const existingDoc = querySnapshot.docs[0];
+        
+        await updateDoc(existingDoc.ref, {
+          fechaSalida: formattedTime,
+          ubicacionSalida: {
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+          },
+        });
+  
+        console.log('Datos de salida actualizados en Firebase Firestore');
+      } else {
+        console.error('No se encontró un documento para actualizar.');
+      }
     } catch (error) {
       console.error('Error al finalizar la jornada:', error.message, error.stack);
     }

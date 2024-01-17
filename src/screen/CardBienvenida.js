@@ -55,15 +55,21 @@ const CardBienvenida = ({  }) => {
         <Text style={styles.patientInfoText}>{`Bienvenido:`}</Text>
         <Text style={styles.patientInfoText}>{`${id || ''} ${nombre || ''} ${apellido || ''}`}</Text>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.terminarHorarioButton,
-              { backgroundColor: pressed ? 'red' : 'green' },
-            ]}
-            onPress={() => navigation.navigate('FinalizarJornada')}
-          >
-            <Text style={styles.buttonText}>Terminar jornada</Text>
-          </Pressable>
+        <Pressable
+  style={({ pressed }) => [
+    styles.terminarHorarioButton,
+    { backgroundColor: pressed ? 'red' : 'green' },
+  ]}
+  onPress={() => {
+    if (fetchedUserData && fetchedUserData.userId) {
+      navigation.navigate('FinalizarJornada', { userId: fetchedUserData.userId });
+    } else {
+      console.error('UserId not found in fetchedUserData');
+    }
+  }}
+>
+  <Text style={styles.buttonText}>Terminar jornada</Text>
+</Pressable>
         </View>
         <View style={styles.profileImageContainer}>
           <Image

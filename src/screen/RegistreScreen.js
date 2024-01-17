@@ -13,7 +13,7 @@ const RegistreScreen = ({ navigation }) => {
   const [dni, setDni] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [userRole, setUserRole] = useState(1);
+  const [userRole, setUserRole] = useState("operador");
 
   const handleRegistre = async () => {
     try {
@@ -23,28 +23,40 @@ const RegistreScreen = ({ navigation }) => {
         email,
         password
       );
-
+  
       // Asignar un ID único al usuario
       const userId = response.user.uid;
-
-      // Agregar el nuevo usuario a la base de datos
+  
+      // Agregar el nuevo usuario a la base de datos con datos de asistencia
       const db = getFirestore(app);
       await setDoc(doc(db, 'usuarios', userId), {
-        userId: userId, // Asignar el ID único al usuario
+        userId: userId,
         userRole: userRole,
         nombre: nombre,
         apellido: apellido,
         dni: dni,
         phoneNumber: phoneNumber,
         // ... otros campos del usuario
+        asistencia: [
+          {
+          
+            // vivienda: null,
+            // usuario: null,
+            // fechaEntrada: null,
+            // ubicacionEntrada: null,
+            // fechaSalida: null,
+            // ubicacionSalida: null,
+          },
+        ],
       });
-
+  
       // Navegar a la pantalla de inicio de sesión después del registro exitoso
       navigation.navigate("login");
     } catch (error) {
       console.error("Error al crear el usuario:", error);
     }
   };
+  ;
 
 
   return (

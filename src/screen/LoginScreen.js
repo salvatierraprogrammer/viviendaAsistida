@@ -83,7 +83,7 @@ const LoginScreen = ({ navigation }) => {
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="large" color="#white" />
+          <ActivityIndicator size="large" color="white" />
         ) : (
           <Text style={styles.texto}>
             Comenzar

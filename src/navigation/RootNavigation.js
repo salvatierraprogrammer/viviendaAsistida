@@ -71,7 +71,7 @@ const RootNavigation = () => {
     <Stack.Navigator initialRouteName="home" >
       {/*Despues de login si es rol 2*/}
       {/* Rol: 2 operador  */}
-      <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
+      {/* <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> */}
       <Stack.Screen
       name="SelectHouse"
       component={SelectHouseScreen}
@@ -104,7 +104,7 @@ const RootNavigation = () => {
       <Stack.Screen name="FinalizarJornada" component={FinalizarJornada} />
 
       {/* Rol: 1 Admin */}
-      {/* <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> */}
+      <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
       <Stack.Screen name='UsuariosScreen' component={UsuariosScreen} />
       <Stack.Screen name='OperadoresScreen' component={OperadoresScreen} />
       <Stack.Screen name='DetailsOperador' component={DetailsOperador} />
