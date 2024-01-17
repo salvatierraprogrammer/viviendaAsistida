@@ -1,27 +1,47 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
-import { getUserInfo } from '../utils/userUtils';
 import { useNavigation } from '@react-navigation/native';
+import { format, parseISO } from 'date-fns';
 
 const CardDetailsOperador = ({ userData }) => {
-  const  navigation = useNavigation();
-  const { firstName, lastName, photoUrl } = getUserInfo(userData);
+  const navigation = useNavigation();
+  const { nombre, apellido, photoUrl, asistencia } = userData;
+
+  if (!nombre || !apellido || !photoUrl) {
+    return null; // Or handle the case where essential user data is missing
+  }
+
+  const { fechaIngreso, ubicacionIngreso } = asistencia || {};
+
+  const fechaIngresoDate = fechaIngreso ? parseISO(fechaIngreso) : null;
+  const formattedDate = fechaIngresoDate ? format(fechaIngresoDate, 'yyyy-MM-dd') : 'Fecha Desconocida';
+  const formattedTime = fechaIngresoDate ? format(fechaIngresoDate, 'HH:mm:ss') : 'Hora Desconocida';
+
+  console.log('Fecha de ingreso:', fechaIngreso);
+  console.log('Fecha formateada:', formattedDate);
+  console.log('Hora formateada:', formattedTime);
+  console.log("Operador: ", userData);
 
   return (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>{`${firstName} ${lastName}`}</Text>
+      <Text style={styles.cardTitle}>{`${nombre} ${apellido}`}</Text>
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.patientInfoText}>Ingreso: 08:00:00</Text>
+          <Text style={styles.patientInfoText}>
+            {`Último ingreso: ${formattedDate} ${formattedTime}`}
+          </Text>
+          <Text style={styles.patientInfoText}>
+            {`Ubicación: ${ubicacionIngreso}`}
+          </Text>
           <Pressable
-              style={({ pressed }) => [
-                styles.terminarHorarioButton,
-                { backgroundColor: pressed ? 'red' : 'green' },
-              ]}
-              onPress={() => navigation.navigate('Trabajando')}
-            >
-              <Text style={styles.buttonText}>Activo</Text>
-            </Pressable>
+            style={({ pressed }) => [
+              styles.terminarHorarioButton,
+              { backgroundColor: pressed ? 'red' : 'green' },
+            ]}
+            onPress={() => navigation.navigate('Trabajando')}
+          >
+            <Text style={styles.buttonText}>Activo</Text>
+          </Pressable>
         </View>
         <View style={styles.profileImageContainer}>
           <Image
@@ -43,7 +63,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     marginBottom: 20,
     width: '90%',
-    marginTop: 10, 
+    marginTop: 10,
   },
   cardTitle: {
     fontSize: 24,

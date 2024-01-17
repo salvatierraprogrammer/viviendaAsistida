@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { format, utcToZonedTime } from 'date-fns-tz';
-import * as Location from 'expo-location';  // Asumiendo que ya tienes esta importación
+import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
+import { app } from '../firebase/firebase_auth';
 
-const FinalizarJornada = () => {
+import {
+  getFirestore,
+  collection,
+  addDoc,
+} from 'firebase/firestore';
+
+const FinalizarJornada = ({ userId }) => {
   const [location, setLocation] = useState(null);
   const navigation = useNavigation();
-  
 
   const confirmarTerminarJornada = async () => {
     try {
@@ -24,37 +30,30 @@ const FinalizarJornada = () => {
 
       // Obtener la fecha y hora actual
       const currentUtcTime = new Date();
-
-      // Convierte la fecha y hora a la zona horaria de Buenos Aires (America/Argentina/Buenos_Aires)
-      const formattedTime = format(utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'), "yyyy-MM-dd'T'HH:mm:ssXXX");
-
-      // Agrega aquí la lógica para guardar la fecha de salida y la ubicación de salida
-      console.log('Fecha de salida:', formattedTime);
-      console.log('Ubicación de salida:', currentLocation);
-
-      // Lógica adicional según tus necesidades (puedes guardar esto en Firebase, por ejemplo)
-      
-      // Mostrar la confirmación
-      Alert.alert(
-        'Confirmación',
-        'Jornada terminada',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'OK',
-            onPress: () => {
-              // Puedes agregar aquí la navegación o cualquier otra lógica adicional después de la confirmación
-              navigation.navigate('SelectHouse');
-            },
-          },
-        ],
-        { cancelable: false }
+      const formattedTime = format(
+        utcToZonedTime(currentUtcTime, 'America/Argentina/Buenos_Aires'),
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
+
+      // Referencia a la colección "usuarios"
+      const db = getFirestore(app);
+      const usuariosCollection = collection(db, 'usuarios');
+
+      // Datos de la jornada
+      const jornadaData = {
+        fechaFin: formattedTime,
+        ubicacionFin: {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        },
+      };
+
+      // Agregar un nuevo documento a la colección "usuarios"
+      const nuevoDocumento = await addDoc(usuariosCollection, jornadaData);
+
+    
     } catch (error) {
-      console.error('Error al finalizar la jornada:', error);
+      console.error('Error al finalizar la jornada:', error.message, error.stack);
     }
   };
 
@@ -64,7 +63,26 @@ const FinalizarJornada = () => {
       <Text style={styles.message}>
         Al confirmar, se dará por terminada la jornada. ¿Estás seguro de continuar?
       </Text>
-      <Pressable style={styles.button} onPress={confirmarTerminarJornada}>
+      <Pressable style={styles.button} onPress={() =>   // Mostrar la confirmación adicional
+      Alert.alert(
+        'Confirmación Adicional',
+        '¿Deseas realizar alguna acción adicional?',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: () => {
+              // Llamar a confirmarTerminarJornada después de la confirmación adicional
+              confirmarTerminarJornada();
+              navigation.navigate('SelectHouse');
+            },
+          },
+        ],
+        { cancelable: false }
+      )}>
         <Text style={styles.buttonText}>Confirmar</Text>
       </Pressable>
     </View>

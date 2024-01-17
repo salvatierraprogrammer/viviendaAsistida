@@ -10,10 +10,6 @@ const HomeScreen = ({ navigation, route }) => {
   
   const { selectedPatient } = route.params;
   const { assistanceDataToSend } = route.params;
-  
-
-  console.log("Datos del paciente", selectedPatient);
-  console.log("Datos de ingreso: ", assistanceDataToSend);
 
   const formattedTimestamp = assistanceDataToSend && assistanceDataToSend.fechaIngreso
   ? format(new Date(assistanceDataToSend.fechaIngreso), 'yyyy-MM-dd HH:mm:ss')

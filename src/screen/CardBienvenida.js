@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CardBienvenida = ({  }) => {
   const navigation = useNavigation();
-  // const [userData, getUserData] = useState("");
+ 
   const [userDetails, setUserDetails] = useState(null);
   const [fetchedUserData, setFetchedUserData] = useState(null);
 
@@ -43,17 +43,17 @@ const CardBienvenida = ({  }) => {
     fetchUserData();
   }, []);
 
-  const { nombre, apellido } = fetchedUserData || {};
+  const { id, nombre, apellido } = fetchedUserData || {};
 
 
-  console.log(userDetails);
+  console.log("Que null soy",userDetails);
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>¡Hola!</Text>
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
         <Text style={styles.patientInfoText}>{`Bienvenido:`}</Text>
-        <Text style={styles.patientInfoText}>{`${nombre || ''} ${apellido || ''}`}</Text>
+        <Text style={styles.patientInfoText}>{`${id || ''} ${nombre || ''} ${apellido || ''}`}</Text>
 
           <Pressable
             style={({ pressed }) => [

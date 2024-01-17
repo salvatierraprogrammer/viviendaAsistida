@@ -12,11 +12,12 @@ const SelectPatientsScreen = ({ route, navigation }) => {
   const { house } = route.params;
   
   const selectedHouse = vivienda.find((casa) => casa.nombre === house);
+  
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleSelectPatients = () => {
     if (selectedPatient) {
-      navigation.navigate('ManageUsers', { selectedPatient });
+      navigation.navigate('ManageUsers', { selectedPatient, selectedHouse });
     }
   };
 
@@ -78,21 +79,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     
+    
   },
   
   patientItem: {
     padding: 10,
     marginVertical: 5,
-    borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     width: '80%',
     marginLeft: 30,
     backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: "#5fbcc0",
+    color: "white",
+    
+
   },
   selectedPatientItem: {
     backgroundColor: '#ADD8E6',
     justifyContent: 'center',
+    color: "white",
   },
   selectButton: {
     borderRadius: 20,
@@ -102,6 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 50,
     alignContent: 'center',
+   
     
     
   },
