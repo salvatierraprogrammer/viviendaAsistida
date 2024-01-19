@@ -7,7 +7,7 @@ const DetailsOperador = ({ route }) => {
   const { userData } = route.params;
 
   console.log("Datos operador:", userData);
-
+  
   if (userData.asistencia) {
     const { fechaIngreso, ubicacionIngreso } = userData.asistencia;
     console.log('Fecha de ingreso:', fechaIngreso);
@@ -19,7 +19,7 @@ const DetailsOperador = ({ route }) => {
   return (
     <View style={styles.container}>
       <CardDetailsOperador userData={userData} />
-      <OpcionesOperador />
+      <OpcionesOperador userData={userData} />
     </View>
   );
 };

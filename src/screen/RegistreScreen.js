@@ -36,18 +36,6 @@ const RegistreScreen = ({ navigation }) => {
         apellido: apellido,
         dni: dni,
         phoneNumber: phoneNumber,
-        // ... otros campos del usuario
-        asistencia: [
-          {
-          
-            // vivienda: null,
-            // usuario: null,
-            // fechaEntrada: null,
-            // ubicacionEntrada: null,
-            // fechaSalida: null,
-            // ubicacionSalida: null,
-          },
-        ],
       });
   
       // Navegar a la pantalla de inicio de sesión después del registro exitoso

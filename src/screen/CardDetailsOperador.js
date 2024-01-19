@@ -5,22 +5,10 @@ import { format, parseISO } from 'date-fns';
 
 const CardDetailsOperador = ({ userData }) => {
   const navigation = useNavigation();
-  const { nombre, apellido, photoUrl, asistencia } = userData;
+  // console.log("users", userData)
+  const { nombre, apellido, photoUrl } = userData;
 
-  if (!nombre || !apellido || !photoUrl) {
-    return null; // Or handle the case where essential user data is missing
-  }
 
-  const { fechaIngreso, ubicacionIngreso } = asistencia || {};
-
-  const fechaIngresoDate = fechaIngreso ? parseISO(fechaIngreso) : null;
-  const formattedDate = fechaIngresoDate ? format(fechaIngresoDate, 'yyyy-MM-dd') : 'Fecha Desconocida';
-  const formattedTime = fechaIngresoDate ? format(fechaIngresoDate, 'HH:mm:ss') : 'Hora Desconocida';
-
-  console.log('Fecha de ingreso:', fechaIngreso);
-  console.log('Fecha formateada:', formattedDate);
-  console.log('Hora formateada:', formattedTime);
-  console.log("Operador: ", userData);
 
   return (
     <View style={styles.card}>
@@ -28,10 +16,10 @@ const CardDetailsOperador = ({ userData }) => {
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
           <Text style={styles.patientInfoText}>
-            {`Último ingreso: ${formattedDate} ${formattedTime}`}
+            {/* {`Último ingreso: ${formattedDate} ${formattedTime}`} */}
           </Text>
           <Text style={styles.patientInfoText}>
-            {`Ubicación: ${ubicacionIngreso}`}
+            {/* {`Ubicación: ${ubicacionIngreso}`} */}
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -44,10 +32,11 @@ const CardDetailsOperador = ({ userData }) => {
           </Pressable>
         </View>
         <View style={styles.profileImageContainer}>
-          <Image
-            source={{ uri: photoUrl }}
-            style={styles.profileImage}
-          />
+        <Image
+          style={styles.profileImage}
+          source={photoUrl ? { uri: userDetails?.photoUrl } : { uri: 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png' }}
+        />
+         
         </View>
       </View>
     </View>

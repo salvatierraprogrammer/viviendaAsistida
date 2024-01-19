@@ -1,59 +1,137 @@
-import React, { useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
 
-const MapWithDetails = () => {
-  const mapRef = useRef(null);
 
-  // Coordenadas de la ubicación simulada
-  const location = {
-    latitude: -34.603722,
-    longitude: -58.381592,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+  import React, { useRef, useEffect, useState } from 'react';
+  import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+  import MapView, { Marker, Callout } from 'react-native-maps';
+  import { getFirestore, doc, getDoc } from 'firebase/firestore';
+  import { app } from '../firebase/firebase_auth';
+  
+  const MapWithDetails = (userData) => {
+    const mapRef = useRef(null);
 
-  // URL de la imagen para el marcador
-  const markerImage = 'https://www.dzoom.org.es/wp-content/uploads/2020/02/portada-foto-perfil-redes-sociales-consejos.jpg';
-
-  // Función para hacer zoom al marcador
-  const zoomToMarker = () => {
-    if (mapRef.current) {
-      mapRef.current.animateToRegion({
-        ...location,
-        latitudeDelta: 0.05, // Ajusta estos valores según tu preferencia
-        longitudeDelta: 0.05,
-      });
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <MapView ref={mapRef} style={styles.map} initialRegion={location}>
-        <Marker coordinate={location} title="Ubicación simulada">
-          <Image source={{ uri: markerImage }} style={styles.markerImage} />
-          {/* Puedes personalizar el contenido del marcador aquí si es necesario */}
-          {/* Por ejemplo, agregar una ventana emergente de información */}
-          <Callout>
-            <View>
-              <Text>Detalles de la ubicación</Text>
-            </View>
-          </Callout>
-        </Marker>
-      </MapView>
-
-      <View style={styles.cardContainer}>
-        <Text style={styles.cardTitle}>Operador: Juana de Arco</Text>
-       
-        <Text style={styles.cardText}>Telefono: + 549 1132764532</Text>
-        <Text style={styles.cardText}>Hora de ingreso: 08:00:00</Text>
-        <TouchableOpacity style={styles.cardButton} onPress={zoomToMarker}>
-          <Text style={styles.cardButtonText}>Ver Detalles</Text>
-        </TouchableOpacity>
+    
+    const [userRegistros, setUserRegistros] = useState([]);
+    const [userLocation, setUserLocation] = useState(null);
+    const [lastEntry, setLastEntry] = useState(null);
+  
+    const userId = userData.route.params.userData.userData.userData.userId;
+    const nombre = userData.route.params.userData.userData.userData.nombre;
+    const apellido = userData.route.params.userData.userData.userData.apellido;
+    const phoneNumber = userData.route.params.userData.userData.userData.phoneNumber;
+    
+    const fetchUsers = async () => {
+      try {
+        const db = getFirestore(app);
+        const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
+        const userDocRef = doc(db, 'users', userId);
+    
+        const asistenciasData = (await getDoc(asistenciasDocRef)).data() || {};
+        const userDoc = await getDoc(userDocRef);
+    
+        const currentRegistros = asistenciasData.registrosAsistencias || [];
+        const userRegistros = currentRegistros
+          .filter((registro) => registro.userId === userId)
+          .map((registro) => ({
+            ...registro,
+            fIngreso: registro.fechaIngreso.split('T')[0],
+            hIngreso: registro.fechaIngreso.split('T')[1].split('Z')[0],
+            fSalida: registro.fechaSalida ? registro.fechaSalida.split('T')[0] : null,
+            hSalida: registro.fechaSalida ? registro.fechaSalida.split('T')[1].split('Z')[0] : null,
+          }));
+    
+        setUserRegistros(userRegistros);
+    
+        if (userDoc.exists()) {
+          const userLocationData = userDoc.data()?.lastLocation;
+    
+          if (userLocationData) {
+            setUserLocation({
+              latitude: userLocationData.latitude,
+              longitude: userLocationData.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            });
+    
+            // Hacer zoom a la ubicación del usuario
+            if (mapRef.current) {
+              mapRef.current.animateToRegion({
+                latitude: userLocationData.latitude,
+                longitude: userLocationData.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              });
+            }
+          }
+        }
+  
+        // Setear la última entrada en el estado
+        if (userRegistros.length > 0) {
+          const lastEntry = userRegistros[userRegistros.length - 1];
+          setLastEntry(lastEntry);
+        }
+      } catch (error) {
+        console.error('Error al obtener datos de usuarios:', error);
+      }
+    };
+  
+    useEffect(() => {
+      // Fetch user details
+      fetchUsers();
+    }, [lastEntry]);
+    
+    useEffect(() => {
+      // Check if userLocation has been updated
+      if (lastEntry && lastEntry.ubicacionIngreso) {
+        // Zoom a la ubicación del usuario
+        if (mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude: lastEntry.ubicacionIngreso.latitude,
+            longitude: lastEntry.ubicacionIngreso.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          });
+        }
+      }
+    }, [lastEntry]);
+    return (
+      <View style={styles.container}>
+        <MapView ref={mapRef} style={styles.map} initialRegion={userLocation}>
+          {lastEntry && (
+            <Marker coordinate={lastEntry.ubicacionIngreso} title="Última ubicación">
+              <Callout>
+                <View>
+                  <Text>Detalles de la última ubicación</Text>
+                  <Text>Latitud: {lastEntry.ubicacionIngreso.latitude}</Text>
+                  <Text>Longitud: {lastEntry.ubicacionIngreso.longitude}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          )}
+        </MapView>
+    
+        <View style={styles.cardContainer}>
+          <Text style={styles.cardTitle}>Operador: {nombre} {apellido}</Text>
+          <Text style={styles.cardText}>Telefono: {phoneNumber}</Text>
+          {/* Mostrar la hora de ingreso desde lastEntry */}
+          <Text style={styles.cardText}>Hora de ingreso: {lastEntry ? lastEntry.hIngreso : ''}</Text>
+          <Text style={styles.cardText}>
+            {lastEntry && lastEntry.hSalida ? (
+              <>
+                Hora de salida: {lastEntry.hSalida}
+              </>
+            ) : (
+              <Text style={{ color: 'green' }}>Activo</Text>
+            )}
+          </Text>
+          <TouchableOpacity style={styles.cardButton} onPress={() => console.log("Ver detalles")}>
+            <Text style={styles.cardButtonText}>Ver Detalles</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
-};
+    );
+
+  };
+  
 
 const styles = StyleSheet.create({
   container: {
@@ -61,11 +139,6 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-  },
-  markerImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
   },
   cardContainer: {
     position: 'absolute',

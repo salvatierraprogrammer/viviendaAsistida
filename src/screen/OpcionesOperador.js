@@ -4,19 +4,22 @@ import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const OpcionesOperador = () => {
+const OpcionesOperador = ( userData ) => {
     const navigation = useNavigation();
+    const { userId } = userData || {};
+  console.log("Id de usuario: ", userId);
+
   return (
     <View style={styles.row}>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.column} onPress={()=> navigation.navigate("ListAsistencia")}>
-          <FontAwesome5 name="clipboard-list" size={24} color="black" />
+        <TouchableOpacity style={styles.column}onPress={() => navigation.navigate("ListAsistencia", { userData: { userData } })}>
+          <FontAwesome5 name="clipboard-list" size={24} color="#5fbcc0" />
           <Text style={styles.optionText}>Asistencias</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.column} onPress={() => navigation.navigate('MapLoc')}>
-          <Entypo name="location" size={24} color="black" />
+        <TouchableOpacity style={styles.column} onPress={() => navigation.navigate('MapLoc', { userData: { userData } })}>
+          <Entypo name="location" size={24} color="#5fbcc0" />
           <Text style={styles.optionText}>Ubicación</Text>
         </TouchableOpacity>
       </View>

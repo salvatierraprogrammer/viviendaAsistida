@@ -66,7 +66,7 @@ const RootNavigation = () => {
 
   const { userRole } = fetchedUserData || {};
   // Verifica si el usuario existe y tiene el rol 2
- console.log("Rol del usuario: ", userRole);
+   console.log("Rol del usuario: ", userRole);
   return (
     <Stack.Navigator initialRouteName="home" >
       {/*Despues de login si es rol 2*/}

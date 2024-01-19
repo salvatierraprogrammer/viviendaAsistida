@@ -91,6 +91,8 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 8,
     marginTop: 8,
+    borderWidth: 2,
+    borderColor: "#5fbcc0",
   },
   title: {
     fontSize: 20,
@@ -100,6 +102,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
+    borderWidth: 2,
+    borderColor: "#5fbcc0",
+    backgroundColor: "white",
+    borderRadius: 20,
   },
   cameraIcon: {
     backgroundColor: 'green',

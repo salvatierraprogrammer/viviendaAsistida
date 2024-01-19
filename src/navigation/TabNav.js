@@ -31,7 +31,7 @@
           component={RootNavigation}
           options={{
             tabBarIcon: ({ focused }) => (
-              <MaterialCommunityIcons name="clipboard-list-outline" size={24} color={focused ? 'blue' : 'black'} />
+              <MaterialCommunityIcons name="clipboard-list-outline" size={24} color={focused ? '#5fbcc0' : 'black'} />
             ),
           }}
         />
@@ -40,7 +40,7 @@
           component={PerfileScreen}
           options={{
             tabBarIcon: ({ focused }) => (
-              <MaterialCommunityIcons name="account-circle" size={24} color={focused ? 'blue' : 'black'} />
+              <MaterialCommunityIcons name="account-circle" size={24} color={focused ? '#5fbcc0' : 'black'} />
             ),
           }}
         />

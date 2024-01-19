@@ -82,6 +82,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     marginBottom: 16,
     width: '100%',
+    borderWidth: 2,
+    borderColor: "#5fbcc0",
   },
   contentContainer: {
     flexDirection: 'row',

@@ -3,10 +3,14 @@ import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
 import { useSaveAssistanceMutation } from '../services/ecApi';
-import { app, firebase_auth } from '../firebase/firebase_auth';
-import { getFirestore, collection, addDoc, getDoc, doc, formattedTime, updateDoc, setDoc, arrayUnion  } from 'firebase/firestore';
+import { app } from '../firebase/firebase_auth';
+import { getFirestore, getDoc, doc, setDoc, arrayUnion  } from 'firebase/firestore';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import Constants from 'expo-constants'; 
+
+
+
 
 const ManageUsersScreen = ({ route, navigation }) => {
   const { selectedPatient } = route.params;
@@ -48,29 +52,11 @@ const ManageUsersScreen = ({ route, navigation }) => {
       // Handle the case where the user is not logged in
     }
   });
-  const getNextAssistanceId = async () => {
-    try {
-      const db = getFirestore(app);
-      const countersDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
-  
-      const countersDoc = await getDoc(countersDocRef);
-      const nextAssistanceId = countersDoc.data()?.assistanceIdCounter;
-  
-      if (nextAssistanceId !== undefined) {
-        // Actualizar el contador para la próxima vez
-        await updateDoc(countersDocRef, {
-          assistanceIdCounter: nextAssistanceId + 1,
-        });
-  
-        return nextAssistanceId.toString();
-      } else {
-        console.error('Error: No se pudo obtener el siguiente assistanceId.');
-        return ''; // O proporciona un valor predeterminado según tus necesidades
-      }
-    } catch (error) {
-      console.error('Error al obtener el próximo assistanceId:', error);
-      throw error;
-    }
+ const getNextAssistanceId = () => {
+    // Utiliza la marca de tiempo actual junto con un valor aleatorio
+    const timestamp = new Date().getTime();
+    const randomValue = Math.floor(Math.random() * 1000); // Puedes ajustar el rango según tus necesidades
+    return `${timestamp}-${randomValue}`;
   };
 
   const handleAssistance = async () => {
@@ -100,28 +86,29 @@ const ManageUsersScreen = ({ route, navigation }) => {
         );
       };
   
-      const nextAssistanceId = await getNextAssistanceId();
+      const nextAssistanceId = getNextAssistanceId();
   
       const assistanceData = {
         assistanceId: nextAssistanceId,
+        userId: auth.currentUser.uid,
+        vivienda: nombreCasa || 'Casa Desconocida',
+        usuario: nombre,
         fechaIngreso: formattedTime(new Date()),
-        nombre,
         ubicacionIngreso: {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
         },
         fechaSalida: null,
         ubicacionSalida: null,
-        userId: auth.currentUser.uid,
-        vivienda: nombreCasa || 'Casa Desconocida',
+        marcaModeloCelularIngreso: `${Constants.platform?.ios ? 'iPhone' : 'Android'} - ${Constants.deviceName}`,
+        marcaModeloCelularSalida: null,
       };
   
       // Obtener los registros actuales antes de actualizar
       const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
       
-      await updateDoc(asistenciasDocRef, {
-        registrosAsistencias: arrayUnion(assistanceData, ...currentRegistros),
-      });
+      await setDoc(asistenciasDocRef, { registrosAsistencias: arrayUnion(assistanceData, ...currentRegistros) }, { merge: true });
+
   
       console.log('Datos guardados en Firebase Firestore');
   

@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 
+
 const MapLocEntrada = ({ route }) => {
-  const { location } = route.params;
+  const { location, fecha, hora, tipoEvento } = route.params;
 
   return (
     <View style={styles.container}>
@@ -12,15 +13,14 @@ const MapLocEntrada = ({ route }) => {
         initialRegion={{
           latitude: location.latitude,
           longitude: location.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
       >
-        <Marker coordinate={location} title="Ubicación de Entrada">
+        <Marker coordinate={location} title={`Ubicación de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}>
           <Callout>
             <View>
-              <Text>Detalles de la ubicación de Entrada</Text>
-              {/* Puedes agregar más detalles aquí según tus necesidades */}
+              <Text>{`Detalles de la ubicación de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}</Text>
               <Text>Latitud: {location.latitude}</Text>
               <Text>Longitud: {location.longitude}</Text>
             </View>
@@ -30,10 +30,9 @@ const MapLocEntrada = ({ route }) => {
 
       {/* Card flotante */}
       <View style={styles.cardContainer}>
-        <Text style={styles.cardTitle}>Detalles de Entrada</Text>
-        <Text style={styles.cardText}>Fecha: 10 de abril de 2023</Text>
-        <Text style={styles.cardText}>Hora: 09:00:00</Text>
-        {/* Puedes agregar más detalles aquí según tus necesidades */}
+        <Text style={styles.cardTitle}>{`Detalles de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}</Text>
+        <Text style={styles.cardText}>Fecha: {fecha}</Text>
+        <Text style={styles.cardText}>Hora: {hora}</Text>
         <TouchableOpacity style={styles.cardButton}>
           <Text style={styles.cardButtonText}>Ver Más Detalles</Text>
         </TouchableOpacity>
