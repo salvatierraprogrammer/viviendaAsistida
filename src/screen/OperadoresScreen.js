@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { app } from '../firebase/firebase_auth';
@@ -7,34 +7,31 @@ import { app } from '../firebase/firebase_auth';
 const OperadoresScreen = () => {
   const navigation = useNavigation();
   const [usersData, setUsersData] = useState([]);
-  console.log(usersData);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const db = getFirestore(app);
         const usuariosCollection = collection(db, 'usuarios');
-        const usuariosSnapshot = await getDocs(query(usuariosCollection, where('userRole', '==', "operador"))); // Cambié 'operador' por 1, asumiendo que 1 es el código para 'operador'
+        const usuariosSnapshot = await getDocs(query(usuariosCollection, where('userRole', '==', 'operador')));
         const usuariosData = usuariosSnapshot.docs.map((doc) => doc.data());
         setUsersData(usuariosData);
-        
-
       } catch (error) {
         console.error('Error al obtener datos de usuarios:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUsers();
   }, []); // empty dependency array to run once on mount
 
-
-
   const renderOperatorItem = ({ item }) => (
     <TouchableOpacity
       style={styles.operatorItem}
       onPress={() => {
         navigation.navigate('DetailsOperador', { userData: item });
-        // fetchAssistanceData(item.id); // Fetch assistance data when an operator is selected
       }}
     >
       <Image
@@ -47,9 +44,25 @@ const OperadoresScreen = () => {
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#5fbcc0" />
+      </View>
+    );
+  }
+
+  if (usersData.length === 0) {
+    return (
+      <View style={styles.noDataContainer}>
+        <Text>No hay operadores disponibles.</Text>
+      </View>
+    );
+  }
+
   return (
     <View>
-     <FlatList
+      <FlatList
         data={usersData}
         renderItem={renderOperatorItem}
         keyExtractor={(item) => item.userId}
@@ -73,6 +86,16 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -1,47 +1,85 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
 import CamaraScreen from './CamaraScreen';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, getDoc, doc } from 'firebase/firestore';
+import SelectHouseScreen from './SelectHouseScreen';
+
 
 const HomeScreen = ({ navigation, route }) => {
+  const { selectedPatient, assistanceDataToSend } = route.params || {};
   
-  const { selectedPatient } = route.params;
-  const { assistanceDataToSend } = route.params;
+
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const db = getFirestore();
+          const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+          const fetchedUserData = userDoc.data();
+
+          // Assuming your user data has a 'userRole' field
+          const role = fetchedUserData?.userRole; // Use optional chaining to handle undefined
+          setUserRole(role);
+          console.log("Rol del usuario a condicionar:", role);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  console.log("Rol del usuario a condicionar:", userRole);
+
     
+  
     const renderItem = () => (
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Datos del usuario:</Text>
         <View style={styles.patientInfo}>
-          <Text style={styles.patientInfoText}>{`${selectedPatient.nombre}`}</Text>
-          <Text style={styles.patientInfoText}>{`Edad: ${selectedPatient.edad}`}</Text>
-          <Text style={styles.patientInfoText}>{`Diagnóstico: ${selectedPatient.diagnostico}`}</Text>
+          <Text style={styles.patientInfoText}>{`${selectedPatient?.nombre || 'Nombre no disponible'}`}</Text>
+          <Text style={styles.patientInfoText}>{`Edad: ${selectedPatient?.edad || 'Edad no disponible'}`}</Text>
+          <Text style={styles.patientInfoText}>{`Diagnóstico: ${selectedPatient?.diagnostico || 'Diagnóstico no disponible'}`}</Text>
         </View>
       </View>
     );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={[selectedPatient]}
-        keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
-        renderItem={renderItem}
-        ListHeaderComponent={() => <CardBienvenida route={{ params: {  assistanceDataToSend} }} />}
-        ListFooterComponent={() => (
+    return (
+      <SafeAreaView style={styles.container}>
+        {selectedPatient ? (
+          <FlatList
+            data={[selectedPatient]}
+            keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
+            renderItem={renderItem}
+            ListHeaderComponent={() => <CardBienvenida route={{ params: { assistanceDataToSend } }} />}
+            ListFooterComponent={() => (
+              <>
+                {/* <CamaraScreen/> */}
+                {selectedPatient && <CardUltimaMedicacion selectedPatient={selectedPatient} />}
+                {selectedPatient && <PlanFarmacologicoScreen route={{ params: { selectedPatient } }} />}
+                {(!selectedPatient && !assistanceDataToSend) && <SelectHouseScreen />}
+              </>
+            )}
+          />
+        ) : (
           <>
-      {/* <CamaraScreen/> */}
-      <CardUltimaMedicacion selectedPatient={selectedPatient} />
-      <PlanFarmacologicoScreen route={{ params: {  selectedPatient} }} />
-
-
-
-    </>
-  )}
-/>
-    </SafeAreaView>
-  );
-};
+            {/* <CamaraScreen/> */}
+            {selectedPatient && <CardUltimaMedicacion selectedPatient={selectedPatient} />}
+            {selectedPatient && <PlanFarmacologicoScreen route={{ params: { selectedPatient } }} />}
+            {(!selectedPatient && !assistanceDataToSend) && <SelectHouseScreen />}
+          </>
+        )}
+      </SafeAreaView>
+    );
+  };
 
 const styles = StyleSheet.create({
   container: {

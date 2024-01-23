@@ -53,7 +53,7 @@ export default class AdminDashboard extends Component {
           data={this.state.opciones}
           renderItem={this.renderOptionButton}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
+          // numColumns={2}
         />
       </View>
     );
@@ -68,22 +68,24 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   button: {
-    margin: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
-    borderWidth: 1,
+    // margin: 10,
+    borderRadius: 20,
+    // overflow: 'hidden',
+    // borderWidth: 1,
     borderColor: '#ccc',
     alignItems: 'center',
-    backgroundColor: '#5fbcc0',
-    justifyContent: 'center',
-    padding: 10,
-    width: '44%',
+    // backgroundColor: '#5fbcc0',
+    backgroundColor: 'white',
+    // justifyContent: 'center',
+    // padding: 10,
+    width: 600,
     height: 200,
+    marginTop: 20,
   },
   optionText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
+    // fontSize: 16,
+    // fontWeight: 'bold',
+    // color: 'white',
   },
   title:{
     fontWeight: 'bold',
@@ -100,3 +102,87 @@ const styles = StyleSheet.create({
 
   },
 });
+// import React, { Component } from 'react';
+// import { Text, StyleSheet, View, FlatList, Pressable } from 'react-native';
+// import { vivienda } from '../data/vivienda';
+// import { useNavigation } from '@react-navigation/native';
+// import { users } from '../data/users';
+
+// import { StyleSheet, Text, View } from 'react-native'
+// import React from 'react'
+
+// const AdminDashboard = () => {
+ 
+// //  const opciones: [
+// //     'usuarios': 'usuarios';
+// //     'operador' : 'operador';
+// //  ]; 
+// //  navigation.navigate('UsuariosScreen');
+// //   navigation.navigate('OperadoresScreen');
+//   renderOptionButton = ({ item }) => (
+//     <Pressable
+//       style={styles.button}
+//       key={item.id}
+//       onPress={() => this.handleOptionPress(item.name)}
+//     >
+//       <Text style={styles.optionText}>{item.name}</Text>
+//     </Pressable>
+
+
+
+//   );
+//   return (
+//     <View style={styles.container}>
+//     <Text style={styles.title}>Bienvenido, seleccione para comenzar</Text>
+//     <FlatList
+//       data={this.state.opciones}
+//       renderItem={this.renderOptionButton}
+//       keyExtractor={(item) => item.id.toString()}
+//       // numColumns={2}
+//     />
+//   </View>
+//   )
+// }
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     margin: 20,
+//   },
+//   button: {
+//     // margin: 10,
+//     borderRadius: 20,
+//     // overflow: 'hidden',
+//     // borderWidth: 1,
+//     borderColor: '#ccc',
+//     alignItems: 'center',
+//     // backgroundColor: '#5fbcc0',
+//     backgroundColor: 'white',
+//     // justifyContent: 'center',
+//     // padding: 10,
+//     width: 600,
+//     height: 200,
+//     marginTop: 20,
+//   },
+//   optionText: {
+//     // fontSize: 16,
+//     // fontWeight: 'bold',
+//     // color: 'white',
+//   },
+//   title:{
+//     fontWeight: 'bold',
+//     // fontFamily: 'bold',
+//     fontSize: 18,
+//     margin: 5,
+//     padding: 10,
+//     backgroundColor: '#5fbcc0',
+//     width: '93%',
+//     height: 50,
+//     color: 'white',
+//     borderRadius: 9,
+//     textAlign: 'center',
+
+//   },
+// });
+// export default AdminDashboard

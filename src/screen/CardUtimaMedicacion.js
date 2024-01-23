@@ -7,13 +7,14 @@ const CardUltimaMedicacion = ({ selectedPatient }) => {
 
   // Function to get the last medication record for the selected patient
   function getLastMedicationRecord() {
-    const { registroMedicacion } = selectedPatient;
+    // Verifica si selectedPatient es undefined antes de acceder a registroMedicacion
+    const medicationRecords = selectedPatient?.registroMedicacion || [];
 
-    if (!registroMedicacion || registroMedicacion.length === 0) {
+    if (!medicationRecords || medicationRecords.length === 0) {
       return null;
     }
 
-    const sortedRecords = registroMedicacion.sort((a, b) => {
+    const sortedRecords = medicationRecords.sort((a, b) => {
       const dateA = new Date(`${a.fecha} ${a.hora}`);
       const dateB = new Date(`${b.fecha} ${b.hora}`);
       return dateB - dateA;
@@ -23,7 +24,6 @@ const CardUltimaMedicacion = ({ selectedPatient }) => {
   }
 
   const lastMedicationRecord = getLastMedicationRecord();
-  
 
   if (!lastMedicationRecord) {
     return (
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
     marginBottom: 16,
-    width: '100%',
+    width: '97%',
     borderWidth: 2,
     borderColor: "#5fbcc0",
   },

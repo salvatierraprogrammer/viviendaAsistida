@@ -7,73 +7,54 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const CardBienvenida = ({  route}) => {
   const navigation = useNavigation();
   const {assistanceDataToSend } = route.params;
-  const [userDetails, setUserDetails] = useState(null);
-  const [fetchedUserData, setFetchedUserData] = useState(null);
 
+  const [fetchedUserData, setFetchedUserData] = useState(null);
+  
   const formattedTimestamp = assistanceDataToSend && assistanceDataToSend.fechaIngreso
   ? format(new Date(assistanceDataToSend.fechaIngreso), 'yyyy-MM-dd HH:mm:ss')
   : '';
 
 const [fechaAsistencia, horaIngreso] = formattedTimestamp.split(' ');
 
-
-
 useEffect(() => {
   const fetchUserData = async () => {
-    try {
-      const storedUserData = await AsyncStorage.getItem('fetchedUserData');
-      console.log('Stored user data:', storedUserData);
-
-      if (!storedUserData) {
-        console.warn('Stored user data is null or undefined');
-        return;
-      }
-
-      const parsedUserData = JSON.parse(storedUserData);
-      console.log('Parsed user data:', parsedUserData);
-
-      // Coloca un console.log aquí para verificar si se imprime correctamente
-      console.log('Setting fetchedUserData:', parsedUserData);
-      setFetchedUserData(parsedUserData);
-
-      // Verifica que parsedUserData y parsedUserData.uid no sean nulos antes de construir el documento de Firestore
-      if (parsedUserData && parsedUserData.userId) {
-        // Obtener la información del usuario de Firestore
-        const db = getFirestore(app);
-        const userDoc = doc(db, 'usuarios', parsedUserData.userId);
-        const userSnapshot = await getDoc(userDoc);
-
-        if (userSnapshot.exists()) {
-          const userDataFromFirestore = userSnapshot.data();
-          console.log('userDataFromFirestore:', userDataFromFirestore);
-
-          // Almacena los detalles del usuario en AsyncStorage
-          await AsyncStorage.setItem('userDetails', JSON.stringify(userDataFromFirestore));
-
-          // También podrías setear los detalles del usuario en el estado si es necesario
-          setUserDetails(userDataFromFirestore);
-        } else {
-          console.warn('User does not exist in Firestore');
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const db = getFirestore();
+          const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+          const userData = userDoc.data();
+          setFetchedUserData(userData);
+          console.log("Usuario:", userData);
+        } catch (error) {
+          console.error('Error al obtener los datos del usuario:', error);
         }
-      } else {
-        console.warn('Parsed user data or uid is null');
       }
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
+    });
+
+    return () => unsubscribe();
   };
 
   fetchUserData();
 }, []);
 
-  const { id, nombre, apellido } = fetchedUserData || {};
+
+console.log("Datos del usuario obtenidos:", fetchedUserData);
+
+// Asegúrate de que fetchedUserData no sea nulo antes de desestructurarlo
+const { id, nombre, apellido } = fetchedUserData || {};
 
 
-  console.log("Que null soy (userDetails)", userDetails || "No hay detalles de usuario");
+
+
+
+
 
   return (
     <View style={styles.card}>

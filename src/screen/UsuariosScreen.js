@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { vivienda } from '../data/vivienda';
+import { useGetViviendaQuery } from '../services/ecApi';
 
 const UsuariosScreen = ({ navigation }) => {
+  const { data: vivienda, isLoading } = useGetViviendaQuery();
+
   const renderPatientItem = ({ item }) => (
     <TouchableOpacity
       style={styles.patientItem}

@@ -1,67 +1,45 @@
 import React, { useState } from 'react';
-import { View, Pressable, Image, StyleSheet, TextInput, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Button } from 'react-native-paper';
+import {SafeAreaView, View, Pressable, Image, StyleSheet, TextInput, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setIdToken, setUser } from '../redux/slice/authSlice';
-import { firebase_auth, app } from '../firebase/firebase_auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import Svg, { Circle, Rect } from 'react-native-svg';
+import { firebase_auth} from '../firebase/firebase_auth';
 
-const LoginScreen = ({ navigation }) => {
-  const [email, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+import { useNavigation } from '@react-navigation/native';
+
+
+const LoginScreen = ({ }) => {
   const [loading, setLoading] = useState(false);
 
+  const navigation = useNavigation();
+
   const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState(null);
 
   const handleLogin = async () => {
     try {
-      setLoading(true); // Set loading to true when starting the login process
-
       const response = await signInWithEmailAndPassword(
         firebase_auth,
         email,
         password
       );
-
-      const db = getFirestore(app);
-      const userDoc = await getDoc(doc(db, 'usuarios', response.user.uid));
-      const fetchedUserData = userDoc.data();
-
-      // Almacena los datos del usuario en AsyncStorage
-      await AsyncStorage.setItem('fetchedUserData', JSON.stringify(fetchedUserData));
-
+      AsyncStorage.setItem("userEmail", response.user.email);     
       dispatch(setUser(response.user.email));
       dispatch(setIdToken(response._tokenResponse.idToken));
-      dispatch(setUser(fetchedUserData));
-
-      if (fetchedUserData && fetchedUserData.userRole) {
-        const userRole = fetchedUserData.userRole;
-
-        if (userRole === "admin") {
-          navigation.navigate('AdminDashboard');
-        } else if (userRole === "operador") {
-          navigation.navigate('SelectHouse');
-        } else {
-          console.log(`Usuario con rol ${userRole}`);
-        }
-      } else {
-        console.log('Usuario sin rol asignado');
-      }
-
-      console.log("+ datos de usuario:", fetchedUserData);
-      console.log("response", response);
+      // console.log(response);
     } catch (e) {
-      console.log("Error Login", e);
-    } finally {
-      setLoading(false); // Set loading to false when the login process is completed
+      console.log("Error en Login", e);
+      setError("Credenciales incorrectas. Por favor, inténtelo de nuevo.");
     }
   };
 
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <Image
         source={{
@@ -71,7 +49,7 @@ const LoginScreen = ({ navigation }) => {
       <TextInput
         placeholder='correo@email.com'
         value={email}
-        onChangeText={(text) => setUsername(text)}
+        onChangeText={(text) => setEmail(text)}
         style={styles.input}
       />
       <TextInput
@@ -90,15 +68,18 @@ const LoginScreen = ({ navigation }) => {
           </Text>
         )}
       </TouchableOpacity>
+
+      {error && (
+        <Text style={styles.errorText}>{error}</Text>
+      )}
       <Pressable onPress={() => {
-        console.log("Pressed: navigate to registreScreen");
         navigation.navigate('registreScreen');
       }}>
         <Text style={[styles.texto, { color: '#5fbcc0', marginTop: 20 }]}>
           No tienes cuenta? Registrate
         </Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -140,6 +121,11 @@ const styles = StyleSheet.create({
   texto: {
     color: 'white',
     fontSize: 20,
+  },
+  errorText:{
+    color: "red",
+    fontWeight: 'bold',
+    marginTop: 10,
   },
 });
 

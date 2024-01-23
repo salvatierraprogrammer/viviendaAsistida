@@ -88,7 +88,7 @@ const FinalizarJornada = ({ route }) => {
           onPress: () => {
             // Llamar a confirmarTerminarJornada después de la confirmación adicional
             confirmarTerminarJornada();
-            navigation.navigate('SelectHouse');
+            navigation.navigate('home');
           },
         },
       ],

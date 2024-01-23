@@ -14,19 +14,58 @@ const RegistreScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [userRole, setUserRole] = useState("operador");
+  const [error, setError] = useState(null);
 
   const handleRegistre = async () => {
     try {
+      // Validaciones
+      if (nombre.trim() === "") {
+        setError("Por favor, ingresa tu nombre.");
+        return;
+      }
+      
+      if (apellido.trim() === "") {
+        setError("Por favor, ingresa tu apellido.");
+        return;
+      }
+      
+      if (dni.length <= 8) {
+        setError("El DNI debe tener más de 8 caracteres.");
+        return;
+      }
+      
+      if (phoneNumber.length <= 9) {
+        setError("El número de teléfono debe tener más de 10 caracteres.");
+        return;
+      }
+      
+     
+
+      // Validar formato de correo electrónico
+      const emailRegex = /^(?=.*[@])(?=.*[.]).*$/;
+      const validEmailProviders = ["gmail.com", "hotmail.com", "yahoo.com"];
+      const emailProvider = email.split("@")[1];
+      if (!emailRegex.test(email) || !validEmailProviders.includes(emailProvider)) {
+        setError("Ingresa un correo electrónico válido de Gmail, Hotmail o Yahoo.");
+        return;
+      }
+
+      // Validar longitud de la contraseña
+      if (password.length <= 5) {
+        setError("La contraseña debe tener al menos 7 caracteres.");
+        return;
+      }
+
       // Crear el usuario en Firebase Authentication
       const response = await createUserWithEmailAndPassword(
         firebase_auth,
         email,
         password
       );
-  
+
       // Asignar un ID único al usuario
       const userId = response.user.uid;
-  
+
       // Agregar el nuevo usuario a la base de datos con datos de asistencia
       const db = getFirestore(app);
       await setDoc(doc(db, 'usuarios', userId), {
@@ -36,15 +75,16 @@ const RegistreScreen = ({ navigation }) => {
         apellido: apellido,
         dni: dni,
         phoneNumber: phoneNumber,
+        photoUrl: null,
       });
-  
+
       // Navegar a la pantalla de inicio de sesión después del registro exitoso
       navigation.navigate("login");
     } catch (error) {
       console.error("Error al crear el usuario:", error);
     }
   };
-  ;
+  
 
 
   return (
@@ -90,6 +130,10 @@ const RegistreScreen = ({ navigation }) => {
       >
         Crear cuenta
       </Button>
+      {error && (
+        <Text style={styles.errorText}>{error}</Text>
+      )}
+
       <Pressable style={styles.cuenta} onPress={() => { navigation.navigate("login") }}>
         <Text style={styles.cuentatext}>Ya tienes cuenta? Iniciar sesión</Text>
       </Pressable>
@@ -131,6 +175,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 15,
     color: '#5fbcc0',
+  },
+  errorText:{
+    color: "red",
+    fontWeight: 'bold',
+    marginTop: 10,
   },
 });
 

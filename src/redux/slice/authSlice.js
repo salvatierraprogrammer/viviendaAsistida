@@ -17,9 +17,12 @@ const authSlice = createSlice({
         clearUser: (state) => {
             (state.user = null),(state.idToken = null);
         },
+        cleareUser: (state) => {
+            state.user = null;
+        },
     },
 });
 
-export const { setIdToken, setUser, clearUser } = authSlice.actions;
+export const { setIdToken, setUser, clearUser, cleareUser } = authSlice.actions;
 
 export default authSlice.reducer;

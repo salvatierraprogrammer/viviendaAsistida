@@ -112,7 +112,7 @@ const ManageUsersScreen = ({ route, navigation }) => {
   
       console.log('Datos guardados en Firebase Firestore');
   
-      navigation.navigate('Home', {
+      navigation.navigate('home', {
         selectedPatient: selectedPatient,
         assistanceDataToSend: assistanceData, // Corregir el nombre de la variable aquí
       });

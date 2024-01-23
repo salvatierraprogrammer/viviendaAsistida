@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { vivienda } from '../data/vivienda';
 
 const CardUsuarios = ({ paciente }) => {
   const formattedTimestamp = paciente.timestamp
@@ -24,7 +23,7 @@ const CardUsuarios = ({ paciente }) => {
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={[paciente]}
         keyExtractor={(item) => item.id.toString()} // Replace with the actual unique key
@@ -35,16 +34,20 @@ const CardUsuarios = ({ paciente }) => {
 };
 
 const styles = StyleSheet.create({
+  // container:{
+  //   flex:1,
+  // },
   card: {
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 20,
+  //  marginBottom: 10,
     width: '96%',
     alignSelf: 'center',
     marginTop: 10,
+    // paddingBottom: -100,
   },
   cardTitle: {
     fontSize: 18,
