@@ -39,7 +39,7 @@ const FinalizarJornada = ({ route }) => {
         longitude: locationResult.coords.longitude,
       };
   
-      console.log('Location:', currentLocation);
+      // console.log('Location:', currentLocation);
       // Obtener los registros actuales antes de actualizar
       const currentDoc = await getDoc(assistanceRef);
       const currentRegistros = currentDoc.data()?.registrosAsistencias || [];

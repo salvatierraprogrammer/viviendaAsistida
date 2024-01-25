@@ -40,7 +40,7 @@ const PerfileScreen = ({ navigation }) => {
           const fetchedUserData = userDoc.data();
           const photo = fetchedUserData?.photoUrl;
           setPhotoUrl(photo);
-          console.log("Foto:", photo);
+          // console.log("Foto:", photo);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -50,7 +50,7 @@ const PerfileScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
-  console.log("Foto url:", photoUrl);
+  // console.log("Foto url:", photoUrl);
 
   const defaultImage =
     "https://www.revistadiabetes.org/wp-content/uploads/Manejo-del-paciente-psiquiatrico-con-diabetes3.jpg";
@@ -80,7 +80,7 @@ const PerfileScreen = ({ navigation }) => {
           base64: true,
         });
   
-        console.log(result);
+        // console.log(result);
   
         if (!result.canceled) {
           handleImageUpload(result.assets[0].base64);

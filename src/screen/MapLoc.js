@@ -1,10 +1,12 @@
 
 
   import React, { useRef, useEffect, useState } from 'react';
-  import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+  import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView } from 'react-native';
   import MapView, { Marker, Callout } from 'react-native-maps';
   import { getFirestore, doc, getDoc } from 'firebase/firestore';
   import { app } from '../firebase/firebase_auth';
+  import { AntDesign } from '@expo/vector-icons';
+  
   
   const MapWithDetails = (userData) => {
     const mapRef = useRef(null);
@@ -18,7 +20,8 @@
     const nombre = userData.route.params.userData.userData.userData.nombre;
     const apellido = userData.route.params.userData.userData.userData.apellido;
     const phoneNumber = userData.route.params.userData.userData.userData.phoneNumber;
-    
+    const photoUrl = userData.route.params.userData.userData.userData.photoUrl;
+
     const fetchUsers = async () => {
       try {
         const db = getFirestore(app);
@@ -73,6 +76,10 @@
         console.error('Error al obtener datos de usuarios:', error);
       }
     };
+
+    const handleBackPress = () => {
+      navigation.goBack(); // Navegar hacia atrás
+    };
   
     useEffect(() => {
       // Fetch user details
@@ -87,17 +94,23 @@
           mapRef.current.animateToRegion({
             latitude: lastEntry.ubicacionIngreso.latitude,
             longitude: lastEntry.ubicacionIngreso.longitude,
-            latitudeDelta: 0.03,
-            longitudeDelta: 0.03,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           });
         }
       }
     }, [lastEntry]);
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+       
+    
         <MapView ref={mapRef} style={styles.map} initialRegion={userLocation}>
           {lastEntry && (
             <Marker coordinate={lastEntry.ubicacionIngreso} title="Última ubicación">
+              <Image
+                style={styles.markerImage}
+                source={{ uri: photoUrl || defaultImage }}
+              />
               <Callout>
                 <View>
                   <Text>Detalles de la última ubicación</Text>
@@ -108,6 +121,9 @@
             </Marker>
           )}
         </MapView>
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+          <AntDesign name="arrowleft" size={24} color="black" />
+        </TouchableOpacity>
     
         <View style={styles.cardContainer}>
           <Text style={styles.cardTitle}>Operador: {nombre} {apellido}</Text>
@@ -127,7 +143,7 @@
             <Text style={styles.cardButtonText}>Ver Detalles</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     );
 
   };
@@ -140,6 +156,13 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
+  markerImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderColor: '#5fbcc0',
+    borderWidth: 2,
+  },
   cardContainer: {
     position: 'absolute',
     bottom: 16,
@@ -148,6 +171,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
+    elevation: 5,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 5,
   },
   cardTitle: {

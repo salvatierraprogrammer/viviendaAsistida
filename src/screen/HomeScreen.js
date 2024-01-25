@@ -11,7 +11,8 @@ import SelectHouseScreen from './SelectHouseScreen';
 
 const HomeScreen = ({ navigation, route }) => {
   const { selectedPatient, assistanceDataToSend } = route.params || {};
-  
+  // const ubicacionSalida = (assistanceDataToSend && assistanceDataToSend.ubicacionSalida) || null;
+  // console.log("USar variable",ubicacionSalida);
 
   const [userRole, setUserRole] = useState(null);
 
@@ -27,7 +28,7 @@ const HomeScreen = ({ navigation, route }) => {
           // Assuming your user data has a 'userRole' field
           const role = fetchedUserData?.userRole; // Use optional chaining to handle undefined
           setUserRole(role);
-          console.log("Rol del usuario a condicionar:", role);
+          // console.log("Rol del usuario a condicionar:", role);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -37,7 +38,7 @@ const HomeScreen = ({ navigation, route }) => {
     return () => unsubscribe();
   }, []);
 
-  console.log("Rol del usuario a condicionar:", userRole);
+  // console.log("Rol del usuario a condicionar:", userRole);
 
     
   

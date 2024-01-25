@@ -6,12 +6,12 @@ import OpcionesOperador from './OpcionesOperador';
 const DetailsOperador = ({ route }) => {
   const { userData } = route.params;
 
-  console.log("Datos operador:", userData);
+ 
   
   if (userData.asistencia) {
     const { fechaIngreso, ubicacionIngreso } = userData.asistencia;
-    console.log('Fecha de ingreso:', fechaIngreso);
-    console.log('Ubicación de ingreso:', ubicacionIngreso);
+    // console.log('Fecha de ingreso:', fechaIngreso);
+    // console.log('Ubicación de ingreso:', ubicacionIngreso);
   } else {
     console.log('El usuario no tiene datos de asistencia.');
   }

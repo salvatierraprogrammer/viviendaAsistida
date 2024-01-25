@@ -60,9 +60,13 @@ const RootNavigation = () => {
       <Stack.Screen name='UsuariosScreen' component={UsuariosScreen} />
       <Stack.Screen name='OperadoresScreen' component={OperadoresScreen} />
       <Stack.Screen name='DetailsOperador' component={DetailsOperador} />
-      <Stack.Screen name='MapLoc' component={MapLoc} />
+      <Stack.Screen name='MapLoc' component={MapLoc} 
+      options={{ headerLeft: null, headerShown: false, tabBarVisible: false }}
+      />
       <Stack.Screen name='ListAsistencia' component={ListAsistencia} />
-      <Stack.Screen name='MapLocEntrada' component={MapLocEntrada} />
+      <Stack.Screen name='MapLocEntrada' component={MapLocEntrada} 
+      options={{ headerLeft: null, headerShown: false, tabBarVisible: false }}
+      />
       <Stack.Screen name='DetailsUsuarios' component={DetailsUsuarios}/>
       <Stack.Screen name='CardPlanFarmacologico' component={CardPlanFarmacologico}/>
       <Stack.Screen name='DetailsPlanFarmacologico' component={DetailsPlanFarmacologico}/>

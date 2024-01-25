@@ -21,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.foucault.MiApp00"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,7 +37,11 @@
           "photosPermission": "La app requiere acceso a tu galeria de foto"
         }
       ]
-    ]
-  
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6a623b32-dd48-4adc-ae8e-0325d06ca490"
+      }
+    }
   }
 }

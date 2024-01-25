@@ -31,7 +31,7 @@ useEffect(() => {
           const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
           const userData = userDoc.data();
           setFetchedUserData(userData);
-          console.log("Usuario:", userData);
+          // console.log("Usuario:", userData);
         } catch (error) {
           console.error('Error al obtener los datos del usuario:', error);
         }
@@ -45,10 +45,10 @@ useEffect(() => {
 }, []);
 
 
-console.log("Datos del usuario obtenidos:", fetchedUserData);
+// console.log("Datos del usuario obtenidos:", fetchedUserData);
 
 // Asegúrate de que fetchedUserData no sea nulo antes de desestructurarlo
-const { id, nombre, apellido } = fetchedUserData || {};
+const { id, nombre, apellido, photoUrl } = fetchedUserData || {};
 
 
 
@@ -99,7 +99,7 @@ const { id, nombre, apellido } = fetchedUserData || {};
         <View style={styles.profileImageContainer}>
         <Image
           style={styles.profileImage}
-          source={{ uri: 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png' }}
+          source={photoUrl ? { uri: photoUrl } : { uri: 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png' }}
         />
         </View>
       </View>

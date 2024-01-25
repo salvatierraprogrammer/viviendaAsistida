@@ -22,18 +22,21 @@ const LoginScreen = ({ }) => {
 
   const handleLogin = async () => {
     try {
+      setLoading(true); // Indicar que se está cargando
       const response = await signInWithEmailAndPassword(
         firebase_auth,
         email,
         password
       );
-      AsyncStorage.setItem("userEmail", response.user.email);     
+      AsyncStorage.setItem("userEmail", response.user.email);
       dispatch(setUser(response.user.email));
       dispatch(setIdToken(response._tokenResponse.idToken));
       // console.log(response);
     } catch (e) {
       console.log("Error en Login", e);
       setError("Credenciales incorrectas. Por favor, inténtelo de nuevo.");
+    } finally {
+      setLoading(false); // Indicar que la carga ha finalizado
     }
   };
 
@@ -59,7 +62,7 @@ const LoginScreen = ({ }) => {
         secureTextEntry
         style={styles.input}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+     <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
         {loading ? (
           <ActivityIndicator size="large" color="white" />
         ) : (

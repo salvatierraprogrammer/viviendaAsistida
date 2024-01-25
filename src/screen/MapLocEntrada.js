@@ -1,10 +1,35 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
+import MapView, { Marker, Callout, Circle } from 'react-native-maps';
+import { AntDesign } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
+const defaultImage = 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png';
+
+const CustomMarker = ({ coordinate, title, image }) => (
+  <Marker coordinate={coordinate}>
+    {image ? (
+      <View style={styles.circle}>
+        <Image source={{ uri: image }} style={styles.circleImage} />
+      </View>
+    ) : (
+      <View style={styles.circle} />
+    )}
+    <Callout>
+      <View>
+        <Text>{title}</Text>
+      </View>
+    </Callout>
+  </Marker>
+);
 
 const MapLocEntrada = ({ route }) => {
-  const { location, fecha, hora, tipoEvento } = route.params;
+  const { location, fecha, hora, tipoEvento, photoUrl } = route.params;
+  const navigation = useNavigation();
+
+  const handleBackPress = () => {
+    navigation.goBack(); // Navegar hacia atrás
+  };
 
   return (
     <View style={styles.container}>
@@ -17,18 +42,22 @@ const MapLocEntrada = ({ route }) => {
           longitudeDelta: 0.01,
         }}
       >
-        <Marker coordinate={location} title={`Ubicación de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}>
-          <Callout>
-            <View>
-              <Text>{`Detalles de la ubicación de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}</Text>
-              <Text>Latitud: {location.latitude}</Text>
-              <Text>Longitud: {location.longitude}</Text>
-            </View>
-          </Callout>
-        </Marker>
+        <CustomMarker
+          coordinate={location}
+          title={`Ubicación de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}
+          image={photoUrl || defaultImage}
+        />
+        <Circle
+          center={location}
+          radius={20}
+          fillColor="rgba(255, 0, 0, 0.5)"
+        />
       </MapView>
 
-      {/* Card flotante */}
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+        <AntDesign name="arrowleft" size={24} color="black" />
+      </TouchableOpacity>
+
       <View style={styles.cardContainer}>
         <Text style={styles.cardTitle}>{`Detalles de ${tipoEvento === 'entrada' ? 'Entrada' : 'Salida'}`}</Text>
         <Text style={styles.cardText}>Fecha: {fecha}</Text>
@@ -47,6 +76,18 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
   },
   cardContainer: {
     position: 'absolute',
@@ -77,6 +118,19 @@ const styles = StyleSheet.create({
   cardButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+   circle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden', // Asegura que la imagen no se salga del círculo
+    borderColor: '#5fbcc0',
+    borderWidth: 2,
+  },
+  circleImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
 });
 

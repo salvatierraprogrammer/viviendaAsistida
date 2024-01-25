@@ -26,7 +26,7 @@ const CardDetailsOperador = ({ userData }) => {
               styles.terminarHorarioButton,
               { backgroundColor: pressed ? 'red' : 'green' },
             ]}
-            onPress={() => navigation.navigate('Trabajando')}
+            onPress={() => console.log("Trabajando")}
           >
             <Text style={styles.buttonText}>Activo</Text>
           </Pressable>
@@ -34,7 +34,7 @@ const CardDetailsOperador = ({ userData }) => {
         <View style={styles.profileImageContainer}>
         <Image
           style={styles.profileImage}
-          source={photoUrl ? { uri: userDetails?.photoUrl } : { uri: 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png' }}
+          source={photoUrl ? { uri: photoUrl } : { uri: 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png' }}
         />
          
         </View>

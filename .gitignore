@@ -33,3 +33,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+# En el archivo .gitattributes
+* text=auto
+
+# Excluir archivos específicos si es necesario
+app.json -text
+eas.json -text

@@ -99,7 +99,10 @@ const ManageUsersScreen = ({ route, navigation }) => {
           longitude: location.coords.longitude,
         },
         fechaSalida: null,
-        ubicacionSalida: null,
+        ubicacionSalida: {
+          latitude: 0,
+          longitude: 0,
+        },
         marcaModeloCelularIngreso: `${Constants.platform?.ios ? 'iPhone' : 'Android'} - ${Constants.deviceName}`,
         marcaModeloCelularSalida: null,
       };
