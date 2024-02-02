@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Entypo } from '@expo/vector-icons';
 
 const CardBienvenida = ({  route}) => {
   const navigation = useNavigation();
@@ -81,19 +82,38 @@ const { id, nombre, apellido, photoUrl } = fetchedUserData || {};
           </View>          
           )}
         <Pressable
-  style={({ pressed }) => [
-    styles.terminarHorarioButton,
-    { backgroundColor: pressed ? 'red' : '#5fbcc0' },
-  ]}
-  onPress={() => {
-    if (fetchedUserData && fetchedUserData.userId) {
-      navigation.navigate('FinalizarJornada', { userId: fetchedUserData.userId, assistanceDataToSend: assistanceDataToSend });
-    } else {
-      console.error('UserId not found in fetchedUserData');
-    }
-  }}
->
-  <Text style={styles.buttonText}>Terminar jornada <MaterialCommunityIcons name="exit-run" size={22} color="white" /></Text>
+              style={({ pressed }) => [
+                styles.terminarHorarioButton,
+                { backgroundColor: pressed ? 'red' : '#5fbcc0' },
+              ]}
+              onPress={() => {
+                if (fetchedUserData && fetchedUserData.userId) {
+                  navigation.navigate('FinalizarJornada', { userId: fetchedUserData.userId, assistanceDataToSend: assistanceDataToSend });
+                } else {
+                  console.error('UserId not found in fetchedUserData');
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Terminar jornada <MaterialCommunityIcons name="exit-run" size={22} color="white" /></Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.terminarHorarioButton,
+            { backgroundColor: pressed ? 'red' : '#5fbcc0' },
+          ]}
+          onPress={() => {
+            if (fetchedUserData && fetchedUserData.userId) {
+              navigation.navigate('Asistencia', { userId: fetchedUserData.userId });
+            } else {
+              console.error('UserId not found in fetchedUserData');
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>Mi asistencia
+           
+           <Entypo name="hour-glass" size={24} color="white" />
+           </Text>
 </Pressable>
         </View>
         <View style={styles.profileImageContainer}>

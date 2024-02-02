@@ -17,6 +17,7 @@ import MapLocEntrada from '../screen/MapLocEntrada';
 import DetailsUsuarios from '../screen/DetailsUsuarios';
 import CardPlanFarmacologico from '../screen/CardPlanFarmacologico';
 import DetailsPlanFarmacologico from '../screen/DetailsPlanFarmacologico';
+import ListMiAsistencia from '../screen/ListMiAsistencia';
 
 
 const Stack = createNativeStackNavigator();
@@ -53,6 +54,7 @@ const RootNavigation = () => {
       <Stack.Screen name="DetailsPlanFarma" component={DetailsPlanFarma} />
       <Stack.Screen name="DetailsUltimaMEd" component={DetailsUltimaMEd} />
       <Stack.Screen name="FinalizarJornada" component={FinalizarJornada} />
+      <Stack.Screen name='Asistencia' component={ListMiAsistencia} />
 
       {/* Rol: 1 Admin */}
       {/* <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> */}
