@@ -7,6 +7,7 @@ const CardDetailsOperador = ({ userData }) => {
   const navigation = useNavigation();
   // console.log("users", userData)
   const { nombre, apellido, photoUrl } = userData;
+  console.log("2",userData.userId)
 
 
 

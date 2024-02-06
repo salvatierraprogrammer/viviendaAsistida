@@ -6,11 +6,21 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, getDoc, doc } from 'firebase/firestore';
 import CardAdmin from './CardAdmin';
 import { useNavigation } from '@react-navigation/native';
+import { storeData, retrieveData } from '../redux/storageService'; // Importa las funciones de AsyncStorage
 
 const SelectHouseScreen = ({ route }) => {
   const { data: vivienda, isLoading } = useGetViviendaQuery();
   const [userRole, setUserRole] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedUserRole = await retrieveData('userRole');
+      setUserRole(storedUserRole);
+    };
+
+    fetchData(); // Carga inicial de datos desde AsyncStorage
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
@@ -24,7 +34,9 @@ const SelectHouseScreen = ({ route }) => {
           // Assuming your user data has a 'userRole' field
           const role = fetchedUserData?.userRole; // Use optional chaining to handle undefined
           setUserRole(role);
-          console.log("Rol del usuario:", role);
+
+          // Almacena el rol del usuario en AsyncStorage para persistencia
+          storeData('userRole', role);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }

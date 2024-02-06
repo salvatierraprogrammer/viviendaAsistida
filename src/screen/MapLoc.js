@@ -7,20 +7,25 @@
   import { app } from '../firebase/firebase_auth';
   import { AntDesign } from '@expo/vector-icons';
   
-  
-  const MapWithDetails = (userData) => {
-    const mapRef = useRef(null);
+  const defaultImage = 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png';
 
+  const MapWithDetails = (userData ) => {
+    const mapRef = useRef(null);
+    // console.log("DatosMap",userData.nombre)
+      // const userId = userData.userId;
+     
+      
+    // const { userData } = userData.route.params.userData;
     
     const [userRegistros, setUserRegistros] = useState([]);
     const [userLocation, setUserLocation] = useState(null);
     const [lastEntry, setLastEntry] = useState(null);
-  
-    const userId = userData.route.params.userData.userData.userData.userId;
-    const nombre = userData.route.params.userData.userData.userData.nombre;
-    const apellido = userData.route.params.userData.userData.userData.apellido;
-    const phoneNumber = userData.route.params.userData.userData.userData.phoneNumber;
-    const photoUrl = userData.route.params.userData.userData.userData.photoUrl;
+    const userId = userData.route.params.userData.userId;
+    // console.log("+++ UserId: ",userId);
+    const nombre = userData.route.params.userData.nombre;
+    const apellido = userData.route.params.userData.apellido;
+    const phoneNumber = userData.route.params.userData.phoneNumber;
+    const photoUrl = userData.route.params.userData.photoUrl;
 
     const fetchUsers = async () => {
       try {

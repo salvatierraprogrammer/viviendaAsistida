@@ -8,7 +8,8 @@ import { getFirestore, getDoc, doc, setDoc, arrayUnion  } from 'firebase/firesto
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Constants from 'expo-constants'; 
-
+import { useNavigation } from '@react-navigation/native';
+import { storeData, retrieveData } from '../redux/storageService';
 
 
 
@@ -19,7 +20,8 @@ const ManageUsersScreen = ({ route, navigation }) => {
   const [loadingLocation, setLoadingLocation] = useState(true);
   const saveAssistanceMutation = useSaveAssistanceMutation();
   const auth = getAuth(app);
-
+  const [userId, setUserId] = useState(null);
+  const DEFAULT_USER_ID = null;
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -39,18 +41,37 @@ const ManageUsersScreen = ({ route, navigation }) => {
       setLoadingLocation(false);
     }
   };
-
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedUserId = await retrieveData('userId');
+      setUserId(storedUserId);
+      console.log("id:Persistencia: ", storedUserId);
+    };
+  
+    fetchData(); // Carga inicial de datos desde AsyncStorage
+  }, []);
+  
   useEffect(() => {
     getLocation();
   }, []);
-
+  console.log('USer: ', userId)
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log('User is logged in:', user.uid);
+      console.log('User is logged in[userId]:', user.uid);
+      setUserId(user.uid); // Actualizar el estado de userId cuando el usuario está autenticado
     } else {
       console.log('User is logged out');
-      // Handle the case where the user is not logged in
+      if (!user || !user.uid) {
+        // Si user es nulo o user.uid es nulo, puedes manejar la lógica aquí
+        console.log('User ID is null or undefined');
+        // Puedes establecer userId a un valor predeterminado o tomar otra acción según tus necesidades
+        setUserId(DEFAULT_USER_ID);
+      } else {
+        setUserId(null); // Establecer userId a null cuando el usuario cierra sesión
+      }
     }
+    console.log('Current userId state:', userId);
   });
  const getNextAssistanceId = () => {
     // Utiliza la marca de tiempo actual junto con un valor aleatorio
@@ -74,7 +95,7 @@ const ManageUsersScreen = ({ route, navigation }) => {
     }
   
     setLoadingLocation(true);
-
+  
     try {
       const db = getFirestore(app);
       const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
@@ -86,11 +107,22 @@ const ManageUsersScreen = ({ route, navigation }) => {
         );
       };
   
+      // Esperar hasta que la autenticación se complete antes de obtener el ID del usuario
+      await new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            resolve();
+          }
+        });
+  
+        return unsubscribe;
+      });
+  
       const nextAssistanceId = getNextAssistanceId();
   
       const assistanceData = {
         assistanceId: nextAssistanceId,
-        userId: auth.currentUser.uid,
+        userId: userId,  // Utiliza el userId del estado local en lugar de auth.currentUser.uid
         vivienda: nombreCasa || 'Casa Desconocida',
         usuario: nombre,
         fechaIngreso: formattedTime(new Date()),
@@ -109,15 +141,14 @@ const ManageUsersScreen = ({ route, navigation }) => {
   
       // Obtener los registros actuales antes de actualizar
       const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
-      
+  
       await setDoc(asistenciasDocRef, { registrosAsistencias: arrayUnion(assistanceData, ...currentRegistros) }, { merge: true });
-
   
       console.log('Datos guardados en Firebase Firestore');
   
       navigation.navigate('home', {
         selectedPatient: selectedPatient,
-        assistanceDataToSend: assistanceData, // Corregir el nombre de la variable aquí
+        assistanceDataToSend: assistanceData,
       });
     } catch (error) {
       console.error('Error al guardar la asistencia:', error);

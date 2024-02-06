@@ -10,89 +10,86 @@ import { ActivityIndicator } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-const ListAsistencia = (userData) => {
-    const navigation = useNavigation();
-    const [userRegistros, setUserRegistros] = useState([]);
-    const [hasAsistencia, setHasAsistencia] = useState(true); // Nuevo estado
-    const [loading, setLoading] = useState(true);
-    const userId = userData.route.params.userData.userData.userData.userId;
-    const photoUrl = userData.route.params.userData.userData.userData.photoUrl;
-    const [error, setError] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
-  
-    useEffect(() => {
-      const fetchUsers = async () => {
-        try {
-          const db = getFirestore(app);
-          const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
-    
-          const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
-    
-          // Filter the records based on userId
-          const userRegistros = currentRegistros
-            .filter(registro => registro.userId === userId)
-            .map((registro) => ({
-              ...registro,
-              fIngreso: new Date(registro.fechaIngreso).toLocaleDateString(),
-              hIngreso: new Date(registro.fechaIngreso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
-              fSalida: registro.fechaSalida ? new Date(registro.fechaSalida).toLocaleDateString() : null,
-              hSalida: registro.fechaSalida ? new Date(registro.fechaSalida).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) : null,
-            }))
-            .sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
-    
-          setUserRegistros(userRegistros);
-          setHasAsistencia(userRegistros.length > 0); // Actualiza el estado según si hay registros o no
-        } catch (error) {
-          console.error('Error al obtener datos de usuarios:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-    
-      fetchUsers();
-    }, [userId]);
-  
-    const verUbicacion = (evento, tipo) => {
+const ListAsistencia = ({ route }) => {
+  const navigation = useNavigation();
+  const [userRegistros, setUserRegistros] = useState([]);
+  const [hasAsistencia, setHasAsistencia] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const userData = route.params.userData || {};
+  // console.log("Datos",userData.nombre)
+  const userId = userData.userId;
+  console.log("Datos",userId);
+  const photoUrl = userData.photoUrl;
+
+  useEffect(() => {
+    const fetchUsers = async () => {
       try {
-        const ubicacion = tipo === 'entrada' ? evento.ubicacionIngreso : evento.ubicacionSalida;
-    
-        // Restablecer el estado de error y ocultar el modal
-        setError(null);
-        setModalVisible(false);
-    
-        // Pasar datos adicionales en los parámetros de navegación
-        navigation.navigate('MapLocEntrada', {
-          location: ubicacion,
-          fecha: tipo === 'entrada' ? evento.fIngreso : evento.fSalida,
-          hora: tipo === 'entrada' ? evento.hIngreso : evento.hSalida,
-          tipoEvento: tipo,
-          photoUrl: photoUrl,
-        });
+        const db = getFirestore(app);
+        const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
+        const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
+        const userRegistros = currentRegistros
+          .filter(registro => registro.userId === userId)
+          .map((registro) => ({
+            ...registro,
+            fIngreso: new Date(registro.fechaIngreso).toLocaleDateString(),
+            hIngreso: new Date(registro.fechaIngreso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
+            fSalida: registro.fechaSalida ? new Date(registro.fechaSalida).toLocaleDateString() : null,
+            hSalida: registro.fechaSalida ? new Date(registro.fechaSalida).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) : null,
+          }))
+          .sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
+
+        setUserRegistros(userRegistros);
+        setHasAsistencia(userRegistros.length > 0);
       } catch (error) {
-        console.error('Error al navegar a MapLocEntrada:', error);
-    
-        // Almacenar el error en el estado y mostrar el modal
-        setError('Error al navegar a MapLocEntrada');
-        setModalVisible(true);
+        console.error('Error al obtener datos de usuarios:', error);
+      } finally {
+        setLoading(false);
       }
     };
-    if (loading) {
-      return (
-        <View style={styles.loadingContainer}>
+
+    fetchUsers();
+  }, [userId]);
+  
+
+  const verUbicacion = (evento, tipo) => {
+    try {
+      const ubicacion = tipo === 'entrada' ? evento.ubicacionIngreso : evento.ubicacionSalida;
+      setError(null);
+      setModalVisible(false);
+
+      navigation.navigate('MapLocEntrada', {
+        location: ubicacion,
+        fecha: tipo === 'entrada' ? evento.fIngreso : evento.fSalida,
+        hora: tipo === 'entrada' ? evento.hIngreso : evento.hSalida,
+        tipoEvento: tipo,
+        photoUrl: photoUrl,
+      });
+    } catch (error) {
+      console.error('Error al navegar a MapLocEntrada:', error);
+      setError('Error al navegar a MapLocEntrada');
+      setModalVisible(true);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="small" color="#5fbcc0" />
         <Text>Cargando...</Text>
       </View>
-       
-      );
-    }
-  
-    if (!hasAsistencia) {
-      return (
-        <View style={styles.container}>
-          <Text>No hay registros de asistencia para este operador.</Text>
-        </View>
-      );
-    }
+    );
+  }
+
+  if (!hasAsistencia) {
+    return (
+      <View style={styles.container}>
+        <Text>No hay registros de asistencia para este operador.</Text>
+      </View>
+    );
+  }
 const renderItem = ({ item }) => (
   <View style={styles.eventoContainer}>
     <Text style={styles.eventoTitle}><MaterialCommunityIcons name="calendar-account" size={24} color="#5fbcc0" />

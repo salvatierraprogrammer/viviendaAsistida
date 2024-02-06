@@ -6,14 +6,14 @@ import { Provider } from 'react-redux';
 import {store} from './src/redux/store';
 import AuthNav from './src/navigation/AuthNav';
 import MainNav from './src/navigation/MainNav';
-
+// import { UserProvider } from './src/redux/UserProvider'; 
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
     <Provider store={store}>
-      <MainNav/>
+       <MainNav/>
     </Provider>
   );
 };

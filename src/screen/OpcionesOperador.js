@@ -4,21 +4,28 @@ import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const OpcionesOperador = ( userData ) => {
-    const navigation = useNavigation();
-    const { userId } = userData || {};
-  console.log("Id de usuario: ", userId);
+const OpcionesOperador = ({ userData }) => {
+  const navigation = useNavigation();
+  console.log("USERDATA: ", userData);
+
+  // Desestructura directamente userId, nombre, apellido, photoUrl
+  const { userId, nombre, apellido, photoUrl } = userData || {};
+  
+  console.log("UserId: ", userId);
 
   return (
     <View style={styles.row}>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.column}onPress={() => navigation.navigate("ListAsistencia", { userData: { userData } })}>
+        <TouchableOpacity style={styles.column} 
+          onPress={() => navigation.navigate("ListAsistencia", { userData })}>
           <FontAwesome5 name="clipboard-list" size={24} color="#5fbcc0" />
           <Text style={styles.optionText}>Asistencias</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.column} onPress={() => navigation.navigate('MapLoc', { userData: { userData } })}>
+        <TouchableOpacity style={styles.column}
+          onPress={() => navigation.navigate('MapLoc', {userData })}
+          >
           <Entypo name="location" size={24} color="#5fbcc0" />
           <Text style={styles.optionText}>Ubicación</Text>
         </TouchableOpacity>

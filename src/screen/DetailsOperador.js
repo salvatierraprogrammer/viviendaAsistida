@@ -5,7 +5,7 @@ import OpcionesOperador from './OpcionesOperador';
 
 const DetailsOperador = ({ route }) => {
   const { userData } = route.params;
-
+  console.log("userData: ", userData)
  
   
   if (userData.asistencia) {

@@ -7,14 +7,27 @@ import CamaraScreen from './CamaraScreen';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, getDoc, doc } from 'firebase/firestore';
 import SelectHouseScreen from './SelectHouseScreen';
-
+import { storeData, retrieveData } from '../redux/storageService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({ navigation, route }) => {
   const { selectedPatient, assistanceDataToSend } = route.params || {};
   // const ubicacionSalida = (assistanceDataToSend && assistanceDataToSend.ubicacionSalida) || null;
   // console.log("USar variable",ubicacionSalida);
-
+  const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedUserId = await retrieveData('userId');
+      const storedUserRole = await retrieveData('userRole');
+
+      setUserId(storedUserId);
+      setUserRole(storedUserRole);
+    };
+
+    fetchData(); // Llamada a la función asíncrona
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
@@ -25,10 +38,13 @@ const HomeScreen = ({ navigation, route }) => {
           const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
           const fetchedUserData = userDoc.data();
 
-          // Assuming your user data has a 'userRole' field
           const role = fetchedUserData?.userRole; // Use optional chaining to handle undefined
           setUserRole(role);
-          // console.log("Rol del usuario a condicionar:", role);
+          setUserId(user.uid);
+
+          // Almacena los datos en AsyncStorage para persistencia
+          storeData('userId', user.uid);
+          storeData('userRole', role);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -38,7 +54,9 @@ const HomeScreen = ({ navigation, route }) => {
     return () => unsubscribe();
   }, []);
 
-  // console.log("Rol del usuario a condicionar:", userRole);
+  console.log("---> Datos a dar persistencia  <-----");
+  console.log("---> UserId:   ", userId);
+  console.log("---> Persiste: ", userRole);
 
     
   
@@ -75,6 +93,7 @@ const HomeScreen = ({ navigation, route }) => {
             {/* <CamaraScreen/> */}
             {selectedPatient && <CardUltimaMedicacion selectedPatient={selectedPatient} />}
             {selectedPatient && <PlanFarmacologicoScreen route={{ params: { selectedPatient } }} />}
+            
             {(!selectedPatient && !assistanceDataToSend) && <SelectHouseScreen />}
           </>
         )}
