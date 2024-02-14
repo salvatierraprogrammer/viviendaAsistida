@@ -10,9 +10,10 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Entypo } from '@expo/vector-icons';
 
-const CardBienvenida = ({  route}) => {
+const CardBienvenida = ({   assistanceDataToSend}) => {
   const navigation = useNavigation();
-  const {assistanceDataToSend } = route.params;
+  // const {assistanceDataToSend } = route.params;
+  console.log("Assitencia Bienvenida:" ,assistanceDataToSend)
 
   const [fetchedUserData, setFetchedUserData] = useState(null);
   
@@ -32,7 +33,8 @@ useEffect(() => {
           const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
           const userData = userDoc.data();
           setFetchedUserData(userData);
-          // console.log("Usuario:", userData);
+          // Almacena los datos del usuario en AsyncStorage para persistencia
+          await AsyncStorage.setItem('userData', JSON.stringify(userData));
         } catch (error) {
           console.error('Error al obtener los datos del usuario:', error);
         }
@@ -43,6 +45,21 @@ useEffect(() => {
   };
 
   fetchUserData();
+}, []);
+
+useEffect(() => {
+  const retrievePersistedUserData = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        setFetchedUserData(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Error al obtener los datos del usuario persistente:', error);
+    }
+  };
+
+  retrievePersistedUserData();
 }, []);
 
 

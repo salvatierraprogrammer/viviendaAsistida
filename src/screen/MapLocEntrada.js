@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
 import MapView, { Marker, Callout, Circle } from 'react-native-maps';
 import { AntDesign } from '@expo/vector-icons';
@@ -7,14 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 const defaultImage = 'https://psicofeminista.com/wp-content/uploads/2023/08/perfil-por-defecto-1-800x600.png';
 
 const CustomMarker = ({ coordinate, title, image }) => (
+ 
   <Marker coordinate={coordinate}>
-    {image ? (
-      <View style={styles.circle}>
-        <Image source={{ uri: image }} style={styles.circleImage} />
-      </View>
-    ) : (
-      <View style={styles.circle} />
-    )}
+    <View style={styles.circle}>
+      {image && <Image source={{ uri: image }} style={styles.circleImage} />}
+    </View>
     <Callout>
       <View>
         <Text>{title}</Text>
@@ -30,10 +27,12 @@ const MapLocEntrada = ({ route }) => {
   const handleBackPress = () => {
     navigation.goBack(); // Navegar hacia atrás
   };
-
+  const mapViewRef = useRef(null);
   return (
     <View style={styles.container}>
       <MapView
+          ref={mapViewRef}
+          showsUserLocation={true}
         style={styles.map}
         initialRegion={{
           latitude: location.latitude,
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-   circle: {
+  circle: {
     width: 40,
     height: 40,
     borderRadius: 20,

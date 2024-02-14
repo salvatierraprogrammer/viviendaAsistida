@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
+import * as Location from'expo-location'; 
 const OpcionesOperador = ({ userData }) => {
   const navigation = useNavigation();
   console.log("USERDATA: ", userData);
@@ -12,7 +12,19 @@ const OpcionesOperador = ({ userData }) => {
   const { userId, nombre, apellido, photoUrl } = userData || {};
   
   console.log("UserId: ", userId);
-
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permiso necesario', 'Para acceder a la ubicación, necesitas otorgar permisos.');
+      } else {
+        // Permiso concedido, puedes navegar a la pantalla de ubicación
+        navigation.navigate('MapLoc', { userData });
+      }
+    } catch (error) {
+      console.error('Error al solicitar permiso de ubicación:', error);
+    }
+  };
   return (
     <View style={styles.row}>
       <View style={styles.container}>
@@ -23,12 +35,10 @@ const OpcionesOperador = ({ userData }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.column}
-          onPress={() => navigation.navigate('MapLoc', {userData })}
-          >
-          <Entypo name="location" size={24} color="#5fbcc0" />
-          <Text style={styles.optionText}>Ubicación</Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.column} onPress={requestLocationPermission}>
+        <Entypo name="location" size={24} color="#5fbcc0" />
+        <Text style={styles.optionText}>Ubicación</Text>
+      </TouchableOpacity>
       </View>
     </View>
   );

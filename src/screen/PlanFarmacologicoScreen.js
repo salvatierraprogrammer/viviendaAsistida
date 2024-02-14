@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const PlanFarmacologicoScreen = ({ route }) => {
-  const { selectedPatient } = route.params;
+const PlanFarmacologicoScreen = ({ selectedPatient }) => {
+  // const { selectedPatient } = route.params;
   const navigation = useNavigation();
 
   if (!selectedPatient || !selectedPatient.planFarmacologico) {
@@ -62,10 +62,17 @@ const PlanFarmacologicoScreen = ({ route }) => {
         />
         {/* Mostrar un ícono de cámara de fotos si está cerca de la hora de la medicación y no ha pasado */}
         {isNearMedicationTime && !hasPassedMedicationTime && (
-          <MaterialCommunityIcons name="camera" color="white" size={50} style={styles.cameraIcon} />
+         <Pressable onPress={() => handleCameraPress()} style={styles.cameraIconContainer}>
+         <MaterialCommunityIcons name="camera" color="white" size={50} style={styles.cameraIcon} />
+       </Pressable>
         )}
       </Card>
     );
+  };
+  const handleCameraPress = () => {
+    // Aquí puedes colocar el código para abrir la cámara o mostrar un mensaje en la consola
+    console.log('Presionaste el ícono de la cámara');
+    // Código para abrir la cámara (si corresponde)
   };
 
   return (
@@ -113,10 +120,15 @@ const styles = StyleSheet.create({
     padding: 4,
     position: 'absolute',
     right: 10,
-    top: 10,
+    top: 0,
   },
   cardCircu: {
     backgroundColor: '#5fbcc0',
+  },
+  cameraIconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 
 });

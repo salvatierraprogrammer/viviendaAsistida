@@ -76,39 +76,43 @@ const renderItem = ({ item }) => (
     <Text style={styles.eventoTitle}><MaterialCommunityIcons name="calendar-account" size={24} color="#5fbcc0" />
       Asistencia
     </Text>
-    <Text>
-      <MaterialCommunityIcons name="home" size={20} color="#5fbcc0" />
-      Vivienda: {item.vivienda}
-    </Text>
-    <Text>
-      <MaterialCommunityIcons name="home-account" size={20} color="#5fbcc0" />
-      Usuario: {item.usuario}
-    </Text>
     <View style={styles.infoContainer}>
-      <Text style={styles.infoText}>
+        <View style={styles.infoItem}>
+          <MaterialCommunityIcons name="home" size={20} color="#5fbcc0" />
+          <Text style={styles.infoText}>Vivienda: {item.vivienda}</Text>
+        </View>
+      </View>
+      <View style={styles.infoContainerButon}>
+        <View style={styles.infoItem}>
+          <MaterialCommunityIcons name="home-account" size={20} color="#5fbcc0" />
+          <Text style={styles.infoText}>Usuario: {item.usuario}</Text>
+        </View>
+    </View>
+    <View style={styles.infoContainer}>
+      <View style={styles.infoItem}>
         <MaterialCommunityIcons name="calendar-arrow-right" size={20} color="#5fbcc0" />
-        Entrada: {item.fIngreso}
-      </Text>
-      <Text style={styles.infoText}>
+        <Text style={styles.infoText}>Entrada: {item.fIngreso}</Text>
+      </View>
+      <View style={styles.infoItem}>
         <MaterialCommunityIcons name="exit-run" size={20} color="#5fbcc0" style={{ transform: [{ scaleX: -1 }] }} />
-        Hora: {item.hIngreso}
-      </Text>
-      
+        <Text style={styles.infoText}>Hora: {item.hIngreso}</Text>
+      </View>
     </View>
-    <View style={styles.infoContainer}>
-       <Text style={styles.infoText}>
-         <MaterialCommunityIcons name="calendar-arrow-left" size={20} color="#5fbcc0" />
-           Salida: {item.fSalida} {item.hSalida ? (
-          <Text style={styles.infoText}>
-            <MaterialCommunityIcons name="exit-run" size={20} color={"#5fbcc0"} style={{ transform: [{ rotateY: '180deg' }] }} />
-            Hora: <Text style={styles.textSa}>{item.hSalida}</Text>
-          </Text>
-        ) : (
-          <Text style={{ color: "green" }}>Activo</Text>
-        )}
-      </Text>
-      
-    </View>
+<View style={styles.infoContainer}>
+  <View style={styles.infoItem}>
+    <MaterialCommunityIcons name="calendar-arrow-left" size={20} color="#5fbcc0" />
+    <Text style={styles.infoText}>Salida: {item.fSalida} </Text>
+    {item.hSalida ? (
+      <View style={styles.infoItem}>
+        <Text style={styles.infoText2}>
+        <MaterialCommunityIcons name="exit-run" size={20} color={"#5fbcc0"} style={{ transform: [{ rotateY: '180deg' }] }} />
+          Hora: {item.hSalida}</Text>
+      </View>
+    ) : (
+      <Text style={{ color: "green", marginLeft: 4 }}>Activo</Text>
+    )}
+  </View>
+</View>
   </View>
 );
   
@@ -145,100 +149,96 @@ const renderItem = ({ item }) => (
   };
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  flatListContainer: {
-    paddingBottom: 16,
-  },
-  eventoContainer: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: "#5fbcc0",
-  },
-  eventoTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-    
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 16,
-  },
-  iconContainer: {
-    marginLeft: 16,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#e0e0e0',
-  },
-
- loadingContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  // backgroundColor: '#5fbcc0',
-},
-  // textSa:{
-  //   fontSize: 12,
-  // },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-});
+    eventoContainer: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      padding: 16,
+      marginBottom: 16,
+      backgroundColor: 'white',
+      borderWidth: 2,
+      borderColor: "#5fbcc0",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    eventoTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      color: '#5fbcc0',
+    },
+    infoContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    infoContainerButon:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+      marginBottom: 10,
+    },
+    infoItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    infoText: {
+      fontSize: 16,
+      marginLeft: 4, // Ajusta el margen izquierdo para dar espacio entre el icono y el texto
+    },
+    infoText2: {
+      fontSize: 16,
+      marginLeft: 65, // Ajusta el margen izquierdo para dar espacio entre el icono y el texto
+    },
+    iconContainer: {
+      marginRight: 8,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+      backgroundColor: '#5fbcc0',
+    },
+    textStyle: {
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: 'center',
+    },
+  });
 
 export default ListMiAsistencia;

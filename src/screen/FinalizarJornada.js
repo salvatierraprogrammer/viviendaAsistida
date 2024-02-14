@@ -16,44 +16,34 @@ const FinalizarJornada = ({ route }) => {
 
   
   const userId = assistanceDataToSend.userId;
-  // console.log("Id usuario", userId);
-  // console.log("datos a actualizar: ", assistanceDataToSend);
 
   const confirmarTerminarJornada = async () => {
     try {
       const db = getFirestore(app);
   
-      // Obtener referencia al documento que deseas actualizar
       const assistanceRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
   
-      // Obtener la fecha y hora actual en el huso horario de Buenos Aires
       const fechaSalidaBuenosAires = format(
         utcToZonedTime(new Date(), 'America/Argentina/Buenos_Aires'),
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
   
-      // Obtener la ubicación
       const locationResult = await Location.getCurrentPositionAsync({});
       const currentLocation = {
         latitude: locationResult.coords.latitude,
         longitude: locationResult.coords.longitude,
       };
   
-      // console.log('Location:', currentLocation);
-      // Obtener los registros actuales antes de actualizar
       const currentDoc = await getDoc(assistanceRef);
       const currentRegistros = currentDoc.data()?.registrosAsistencias || [];
 
-      // Realizar la actualización del campo registrosAsistencias
       await updateDoc(assistanceRef, {
         registrosAsistencias: currentRegistros.map((registro) => {
           if (registro.assistanceId === assistanceDataToSend.assistanceId) {
-            // Actualizar el registro actual con nueva información
             return {
               ...registro,
               fechaSalida: fechaSalidaBuenosAires,
               ubicacionSalida: currentLocation,
-              // marcaModeloCelularSalida: `${Constants.platform?.ios ? 'iPhone' : 'Android'} - ${Constants.deviceName}`,
             };
           } else {
             return registro;
@@ -61,11 +51,23 @@ const FinalizarJornada = ({ route }) => {
         }),
       });
 
-  
+      // Mostrar los datos guardados por consola
+      console.log('Datos guardados:', {
+        fechaSalida: fechaSalidaBuenosAires,
+        ubicacionSalida: currentLocation,
+      });
+
       Alert.alert(
         '¡Excelente trabajo!',
         'Has completado la jornada con éxito. Tu dedicación y apoyo hacen una gran diferencia en la vida de quienes atiendes. Recuerda tomarte un momento para relajarte y recargar energías. ¡Gracias por tu labor tan valiosa!',
       );
+
+      // Navegar a la pantalla de inicio (HomeScreen) después de finalizar la jornada
+      navigation.navigate('home', {
+        fechaSalida: fechaSalidaBuenosAires,
+        ubicacionSalida: currentLocation,
+      });
+
     } catch (error) {
       console.error('Error al actualizar el registro:', error);
       Alert.alert('Error', 'Hubo un error al intentar finalizar la jornada. Por favor, comunícate con soporte.');
@@ -74,7 +76,6 @@ const FinalizarJornada = ({ route }) => {
   
 
   const handleConfirmation = () => {
-    // Mostrar la confirmación adicional
     Alert.alert(
       'Confirmación Adicional',
       '¿Deseas realizar alguna acción adicional?',
@@ -86,9 +87,7 @@ const FinalizarJornada = ({ route }) => {
         {
           text: 'OK',
           onPress: () => {
-            // Llamar a confirmarTerminarJornada después de la confirmación adicional
             confirmarTerminarJornada();
-            navigation.navigate('home');
           },
         },
       ],
@@ -112,17 +111,15 @@ const FinalizarJornada = ({ route }) => {
           longitude: locationResult.coords.longitude,
         };
     
-        console.log('Location:', currentLocation);
         setLocation(currentLocation);
       } catch (error) {
         console.error('Error al obtener la ubicación:', error);
         Alert.alert('Error', 'Hubo un error al obtener la ubicación. Por favor, comunícate con soporte.');
       }
-    
     };
   
     obtenerUbicacion();
-  }, [setLocation]); // Ajusta las dependencias según tus necesidades
+  }, [setLocation]);
 
   return (
     <View style={styles.container}>

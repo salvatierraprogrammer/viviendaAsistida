@@ -36,6 +36,12 @@
         {
           "photosPermission": "La app requiere acceso a tu galeria de foto"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir acceder a tu ubicacion."
+        }
       ]
     ],
     "extra": {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import CardUltimaMedicacion from './CardUtimaMedicacion';
 import CardBienvenida from './CardBienvenida';
 import PlanFarmacologicoScreen from './PlanFarmacologicoScreen';
@@ -9,13 +9,50 @@ import { getFirestore, getDoc, doc } from 'firebase/firestore';
 import SelectHouseScreen from './SelectHouseScreen';
 import { storeData, retrieveData } from '../redux/storageService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CardUsuarioDatos from '../components/CardUsuarioDatos';
 
 const HomeScreen = ({ navigation, route }) => {
   const { selectedPatient, assistanceDataToSend } = route.params || {};
-  // const ubicacionSalida = (assistanceDataToSend && assistanceDataToSend.ubicacionSalida) || null;
-  // console.log("USar variable",ubicacionSalida);
+  const { fechaSalida, ubicacionSalida } = route.params || {};
+  console.log("Ubicacion Salida: ", ubicacionSalida);
+  console.log("Fecha Salida: ", fechaSalida);
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [storedSelectedPatient, setStoredSelectedPatient] = useState(null);
+  const [storedAssistanceDataToSend, setStoredAssistanceDataToSend] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasFinishedWork, setHasFinishedWork] = useState(false);
+  // Define the verificarSalida function
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (selectedPatient) {
+          await AsyncStorage.setItem('selectedPatient', JSON.stringify(selectedPatient));
+        }
+
+        if (assistanceDataToSend) {
+          await AsyncStorage.setItem('assistanceDataToSend', JSON.stringify(assistanceDataToSend));
+        }
+
+        const storedSelectedPatient = await AsyncStorage.getItem('selectedPatient');
+        const storedAssistanceDataToSend = await AsyncStorage.getItem('assistanceDataToSend');
+        console.log('Retrieved selectedPatient from AsyncStorage:', storedSelectedPatient);
+        console.log('Retrieved assistanceDataToSend from AsyncStorage:', storedAssistanceDataToSend);
+        if (storedSelectedPatient) {
+          setStoredSelectedPatient(JSON.parse(storedSelectedPatient));
+        }
+        if (storedAssistanceDataToSend) {
+          setStoredAssistanceDataToSend(JSON.parse(storedAssistanceDataToSend));
+        }
+      } catch (error) {
+        console.error('Error retrieving data from AsyncStorage:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedPatient, assistanceDataToSend]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +63,7 @@ const HomeScreen = ({ navigation, route }) => {
       setUserRole(storedUserRole);
     };
 
-    fetchData(); // Llamada a la función asíncrona
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -38,11 +75,10 @@ const HomeScreen = ({ navigation, route }) => {
           const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
           const fetchedUserData = userDoc.data();
 
-          const role = fetchedUserData?.userRole; // Use optional chaining to handle undefined
+          const role = fetchedUserData?.userRole;
           setUserRole(role);
           setUserId(user.uid);
 
-          // Almacena los datos en AsyncStorage para persistencia
           storeData('userId', user.uid);
           storeData('userRole', role);
         } catch (error) {
@@ -54,59 +90,95 @@ const HomeScreen = ({ navigation, route }) => {
     return () => unsubscribe();
   }, []);
 
-  console.log("---> Datos a dar persistencia  <-----");
-  console.log("---> UserId:   ", userId);
-  console.log("---> Persiste: ", userRole);
-
-    
+  useEffect(() => {
+    const checkWorkStatus = async () => {
+      try {
+        if (storedAssistanceDataToSend && storedAssistanceDataToSend.fechaSalida && storedAssistanceDataToSend.ubicacionSalida) {
+          setHasFinishedWork(true);
+        }
+      } catch (error) {
+        console.error('Error checking work status:', error);
+      }
+    };
   
-    const renderItem = () => (
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Datos del usuario:</Text>
-        <View style={styles.patientInfo}>
-          <Text style={styles.patientInfoText}>{`${selectedPatient?.nombre || 'Nombre no disponible'}`}</Text>
-          <Text style={styles.patientInfoText}>{`Edad: ${selectedPatient?.edad || 'Edad no disponible'}`}</Text>
-          <Text style={styles.patientInfoText}>{`Diagnóstico: ${selectedPatient?.diagnostico || 'Diagnóstico no disponible'}`}</Text>
-        </View>
-      </View>
-    );
+    checkWorkStatus();
+  }, [storedAssistanceDataToSend]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let selectedPatientData = null;
+        let assistanceDataToSend = null;
+  
+        if (selectedPatient) {
+          await AsyncStorage.setItem('selectedPatient', JSON.stringify(selectedPatient));
+          selectedPatientData = selectedPatient;
+        } else {
+          const storedSelectedPatient = await AsyncStorage.getItem('selectedPatient');
+          selectedPatientData = storedSelectedPatient ? JSON.parse(storedSelectedPatient) : null;
+        }
+  
+        if (assistanceDataToSend) {
+          await AsyncStorage.setItem('assistanceDataToSend', JSON.stringify(assistanceDataToSend));
+        } else {
+          const storedAssistanceDataToSend = await AsyncStorage.getItem('assistanceDataToSend');
+          assistanceDataToSend = storedAssistanceDataToSend ? JSON.parse(storedAssistanceDataToSend) : null;
+  
+          // Limpieza de los datos de persistencia aquí
+          if (ubicacionSalida.latitude && ubicacionSalida.longitude && fechaSalida) {
+            console.log("Starting persistence data cleanup...");
+            await AsyncStorage.removeItem('assistanceDataToSend');
+            await AsyncStorage.removeItem('selectedPatient');
+            console.log("Persistence data cleared successfully.");
+          }
+        }
+  
+        setStoredSelectedPatient(selectedPatientData);
+        setStoredAssistanceDataToSend(assistanceDataToSend);
+      } catch (error) {
+        console.error('Error retrieving data from AsyncStorage:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [selectedPatient, assistanceDataToSend]);
 
-    return (
-      <SafeAreaView style={styles.container}>
-        {selectedPatient ? (
-          <FlatList
-            data={[selectedPatient]}
-            keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
-            renderItem={renderItem}
-            ListHeaderComponent={() => <CardBienvenida route={{ params: { assistanceDataToSend } }} />}
-            ListFooterComponent={() => (
-              <>
-                {/* <CamaraScreen/> */}
-                {selectedPatient && <CardUltimaMedicacion selectedPatient={selectedPatient} />}
-                {selectedPatient && <PlanFarmacologicoScreen route={{ params: { selectedPatient } }} />}
-                {(!selectedPatient && !assistanceDataToSend) && <SelectHouseScreen />}
-              </>
-            )}
-          />
-        ) : (
+  console.log("----> Datos a dar persistencia  <------");
+  console.log("###> UserId:   ", userId, "<###");
+  console.log("###> Persiste: ", userRole, "<###-----");
+  console.log("------------> Fin  <-----------------");
+  console.log("Persistencia selectedPatient:", storedSelectedPatient);
+  console.log("Persistencia assistanceDataToSend:", storedAssistanceDataToSend);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {storedAssistanceDataToSend ? (
           <>
-            {/* <CamaraScreen/> */}
-            {selectedPatient && <CardUltimaMedicacion selectedPatient={selectedPatient} />}
-            {selectedPatient && <PlanFarmacologicoScreen route={{ params: { selectedPatient } }} />}
-            
-            {(!selectedPatient && !assistanceDataToSend) && <SelectHouseScreen />}
+            <CardBienvenida assistanceDataToSend={storedAssistanceDataToSend} />
+            <CardUsuarioDatos selectedPatient={storedSelectedPatient}/>
+            <CardUltimaMedicacion selectedPatient={storedSelectedPatient} />
+            <PlanFarmacologicoScreen selectedPatient={storedSelectedPatient} /> 
           </>
+        ) : (
+          <SelectHouseScreen />
         )}
-      </SafeAreaView>
-    );
-  };
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
     marginTop: 20,
- 
+    paddingTop: Platform.OS === 'android' ? 24 : 0,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingVertical: 20,
   },
   title: {
     fontSize: 24,
@@ -124,6 +196,11 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 2,
     borderColor: "#5fbcc0",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardTitle: {
     fontSize: 18,
@@ -149,7 +226,7 @@ const styles = StyleSheet.create({
   dateTimeLabelText: {
     fontSize: 16,
     marginRight: 5,
-    color: '#555', // Puedes ajustar el color según tus preferencias
+    color: '#555',
   },
   dateTimeText: {
     fontSize: 16,
