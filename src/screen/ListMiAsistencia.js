@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, query, collection, orderBy, getDocs } from 'firebase/firestore';
 import { app } from '../firebase/firebase_auth';
 
 import { ActivityIndicator } from 'react-native-paper';
@@ -26,7 +26,7 @@ const ListMiAsistencia = (route) => {
         try {
           const db = getFirestore(app);
           const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
-    
+          const q = query(collection(asistenciasDocRef, 'registrosAsistencias'), orderBy('fechaIngreso', 'desc'));
           const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
     
           // Filter the records based on userId

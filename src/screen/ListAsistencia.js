@@ -81,7 +81,7 @@
         setModalVisible(true);
       }
     };
-    console.log(status);
+    // console.log(status);
 
     const verUbicacion = (evento, tipo) => {
       try {

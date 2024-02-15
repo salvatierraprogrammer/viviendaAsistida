@@ -14,10 +14,11 @@ import CardUsuarioDatos from '../components/CardUsuarioDatos';
 const HomeScreen = ({ navigation, route }) => {
   const { selectedPatient, assistanceDataToSend } = route.params || {};
   const { fechaSalida, ubicacionSalida } = route.params || {};
-  console.log("Ubicacion Salida: ", ubicacionSalida);
-  console.log("Fecha Salida: ", fechaSalida);
+  // console.log("Ubicacion Salida: ", ubicacionSalida);
+  // console.log("Fecha Salida: ", fechaSalida);
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  
   const [storedSelectedPatient, setStoredSelectedPatient] = useState(null);
   const [storedAssistanceDataToSend, setStoredAssistanceDataToSend] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,8 +37,8 @@ const HomeScreen = ({ navigation, route }) => {
 
         const storedSelectedPatient = await AsyncStorage.getItem('selectedPatient');
         const storedAssistanceDataToSend = await AsyncStorage.getItem('assistanceDataToSend');
-        console.log('Retrieved selectedPatient from AsyncStorage:', storedSelectedPatient);
-        console.log('Retrieved assistanceDataToSend from AsyncStorage:', storedAssistanceDataToSend);
+        // console.log('Retrieved selectedPatient from AsyncStorage:', storedSelectedPatient);
+        // console.log('Retrieved assistanceDataToSend from AsyncStorage:', storedAssistanceDataToSend);
         if (storedSelectedPatient) {
           setStoredSelectedPatient(JSON.parse(storedSelectedPatient));
         }
@@ -103,6 +104,9 @@ const HomeScreen = ({ navigation, route }) => {
   
     checkWorkStatus();
   }, [storedAssistanceDataToSend]);
+
+
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,11 +128,20 @@ const HomeScreen = ({ navigation, route }) => {
           assistanceDataToSend = storedAssistanceDataToSend ? JSON.parse(storedAssistanceDataToSend) : null;
   
           // Limpieza de los datos de persistencia aquí
-          if (ubicacionSalida.latitude && ubicacionSalida.longitude && fechaSalida) {
-            console.log("Starting persistence data cleanup...");
+          if (ubicacionSalida && ubicacionSalida.latitude !== 0 && ubicacionSalida.longitude !== 0 && fechaSalida) {
+            // console.log("Starting persistence data cleanup...");
+            // console.log("ubicacionSalida.latitude:", ubicacionSalida.latitude);
+            // console.log("ubicacionSalida.longitude:", ubicacionSalida.longitude);
+            // console.log("fechaSalida:", fechaSalida);
             await AsyncStorage.removeItem('assistanceDataToSend');
             await AsyncStorage.removeItem('selectedPatient');
-            console.log("Persistence data cleared successfully.");
+            // console.log("Persistence data cleared successfully.");
+  
+            // Navegar a SelectHouseScreen después de limpiar los datos
+            navigation.navigate('SelectHouse');
+          } else {
+            // navigation.navigate('SelectHouse');
+            console.log("No valid location or departure date found. Skipping persistence cleanup.");
           }
         }
   
@@ -142,30 +155,34 @@ const HomeScreen = ({ navigation, route }) => {
     };
   
     fetchData();
-  }, [selectedPatient, assistanceDataToSend]);
+  }, [selectedPatient, assistanceDataToSend, ubicacionSalida, fechaSalida]);
 
-  console.log("----> Datos a dar persistencia  <------");
-  console.log("###> UserId:   ", userId, "<###");
-  console.log("###> Persiste: ", userRole, "<###-----");
-  console.log("------------> Fin  <-----------------");
-  console.log("Persistencia selectedPatient:", storedSelectedPatient);
-  console.log("Persistencia assistanceDataToSend:", storedAssistanceDataToSend);
+  // console.log("----> Datos a dar persistencia  <------");
+  // console.log("###> UserId:   ", userId, "<###");
+  // console.log("###> Persiste: ", userRole, "<###-----");
+  // console.log("------------> Fin  <-----------------");
+  // console.log("Persistencia selectedPatient:", storedSelectedPatient);
+  // console.log("Persistencia assistanceDataToSend:", storedAssistanceDataToSend);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {storedAssistanceDataToSend ? (
-          <>
-            <CardBienvenida assistanceDataToSend={storedAssistanceDataToSend} />
-            <CardUsuarioDatos selectedPatient={storedSelectedPatient}/>
-            <CardUltimaMedicacion selectedPatient={storedSelectedPatient} />
-            <PlanFarmacologicoScreen selectedPatient={storedSelectedPatient} /> 
-          </>
-        ) : (
-          <SelectHouseScreen />
-        )}
-      </ScrollView>
-    </SafeAreaView>
+ 
+     <SafeAreaView style={styles.container}>
+  <FlatList
+    contentContainerStyle={styles.scrollContainer}
+    data={storedAssistanceDataToSend ? [1] : []}
+    renderItem={({ item }) => (
+      <>
+        <CardBienvenida assistanceDataToSend={storedAssistanceDataToSend} />
+        <CardUsuarioDatos selectedPatient={storedSelectedPatient}/>
+        <CardUltimaMedicacion selectedPatient={storedSelectedPatient} />
+        <View style={styles.planContainer}>
+          <PlanFarmacologicoScreen selectedPatient={storedSelectedPatient} /> 
+        </View>
+      </>
+    )}
+    keyExtractor={(item, index) => index.toString()}
+  />
+</SafeAreaView>
   );
 };
 
@@ -176,6 +193,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: Platform.OS === 'android' ? 24 : 0,
   },
+  // planContainer: {
+  //   maxHeight: 200, // Ajusta esta altura según sea necesario
+  // },
   scrollContainer: {
     flexGrow: 1,
     paddingVertical: 20,

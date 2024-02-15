@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator  } from 'react-native';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
 import { useSaveAssistanceMutation } from '../services/ecApi';
@@ -8,8 +8,8 @@ import { getFirestore, getDoc, doc, setDoc, arrayUnion  } from 'firebase/firesto
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Constants from 'expo-constants'; 
-import { useNavigation } from '@react-navigation/native';
-import { storeData, retrieveData } from '../redux/storageService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 
@@ -18,10 +18,10 @@ const ManageUsersScreen = ({ route, navigation }) => {
   const { selectedHouse } = route.params;
   const [location, setLocation] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(true);
+  const [userId, setUserId] = useState(null); // Estado para almacenar el userId
   const saveAssistanceMutation = useSaveAssistanceMutation();
   const auth = getAuth(app);
-  const [userId, setUserId] = useState(null);
-  const DEFAULT_USER_ID = null;
+
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -41,39 +41,47 @@ const ManageUsersScreen = ({ route, navigation }) => {
       setLoadingLocation(false);
     }
   };
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      const storedUserId = await retrieveData('userId');
-      setUserId(storedUserId);
-      console.log("id:Persistencia: ", storedUserId);
-    };
-  
-    fetchData(); // Carga inicial de datos desde AsyncStorage
-  }, []);
-  
+
   useEffect(() => {
     getLocation();
   }, []);
-  console.log('USer: ', userId)
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log('User is logged in[userId]:', user.uid);
-      setUserId(user.uid); // Actualizar el estado de userId cuando el usuario está autenticado
-    } else {
-      console.log('User is logged out');
-      if (!user || !user.uid) {
-        // Si user es nulo o user.uid es nulo, puedes manejar la lógica aquí
-        console.log('User ID is null or undefined');
-        // Puedes establecer userId a un valor predeterminado o tomar otra acción según tus necesidades
-        setUserId(DEFAULT_USER_ID);
-      } else {
-        setUserId(null); // Establecer userId a null cuando el usuario cierra sesión
+
+  useEffect(() => {
+    const getUserIdFromStorage = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+      } catch (error) {
+        console.error('Error retrieving userId from AsyncStorage:', error);
       }
-    }
-    console.log('Current userId state:', userId);
-  });
- const getNextAssistanceId = () => {
+    };
+    getUserIdFromStorage();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log('User is logged in:', user.uid);
+        const cleanUserId = user.uid.replace(/\"/g, ''); // Eliminar las comillas adicionales del userId
+        setUserId(cleanUserId); // Actualizar el userId en el estado cuando el usuario inicia sesión
+        try {
+          AsyncStorage.setItem('userId', cleanUserId); // Guardar el userId limpio sin comillas adicionales
+        } catch (error) {
+          console.error('Error saving userId to AsyncStorage:', error);
+        }
+      } else {
+        console.log('User is logged out');
+        // No necesitamos limpiar el userId del estado aquí
+      }
+    });
+  
+    return unsubscribe; // Limpiar el efecto al desmontar el componente
+  }, [auth]); // Asegúrate de que el efecto se ejecute cuando cambie la autenticación
+
+
+  const getNextAssistanceId = () => {
     // Utiliza la marca de tiempo actual junto con un valor aleatorio
     const timestamp = new Date().getTime();
     const randomValue = Math.floor(Math.random() * 1000); // Puedes ajustar el rango según tus necesidades
@@ -85,44 +93,33 @@ const ManageUsersScreen = ({ route, navigation }) => {
       console.error('La ubicación o el paciente no están disponibles.');
       return;
     }
-  
-    const { id: userId, nombre } = selectedPatient;
+
+    const { id: patientId, nombre } = selectedPatient;
     const { nombre: nombreCasa } = selectedHouse;
-  
-    if (!userId || !nombre || !nombreCasa) {
+
+    if (!patientId || !nombre || !nombreCasa) {
       console.error('Datos del paciente o de la casa incompletos.');
       return;
     }
-  
+
     setLoadingLocation(true);
-  
+
     try {
       const db = getFirestore(app);
       const asistenciasDocRef = doc(db, 'asistencias', 'G8YnEIZi0DCNwn6S5kxS');
-  
+
       const formattedTime = (date) => {
         return format(
           utcToZonedTime(date, 'America/Argentina/Buenos_Aires'),
           "yyyy-MM-dd'T'HH:mm:ssXXX"
         );
       };
-  
-      // Esperar hasta que la autenticación se complete antes de obtener el ID del usuario
-      await new Promise((resolve) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (user) {
-            resolve();
-          }
-        });
-  
-        return unsubscribe;
-      });
-  
+
       const nextAssistanceId = getNextAssistanceId();
-  
+
       const assistanceData = {
         assistanceId: nextAssistanceId,
-        userId: userId,  // Utiliza el userId del estado local en lugar de auth.currentUser.uid
+        userId: userId, // Utilizamos el userId del estado en lugar de recuperarlo de auth.currentUser.uid
         vivienda: nombreCasa || 'Casa Desconocida',
         usuario: nombre,
         fechaIngreso: formattedTime(new Date()),
@@ -131,24 +128,21 @@ const ManageUsersScreen = ({ route, navigation }) => {
           longitude: location.coords.longitude,
         },
         fechaSalida: null,
-        ubicacionSalida: {
-          latitude: 0,
-          longitude: 0,
-        },
+        ubicacionSalida: null,
         marcaModeloCelularIngreso: `${Constants.platform?.ios ? 'iPhone' : 'Android'} - ${Constants.deviceName}`,
         marcaModeloCelularSalida: null,
       };
-  
+
       // Obtener los registros actuales antes de actualizar
       const currentRegistros = (await getDoc(asistenciasDocRef)).data()?.registrosAsistencias || [];
-  
+      
       await setDoc(asistenciasDocRef, { registrosAsistencias: arrayUnion(assistanceData, ...currentRegistros) }, { merge: true });
-  
+
       console.log('Datos guardados en Firebase Firestore');
-  
+
       navigation.navigate('home', {
         selectedPatient: selectedPatient,
-        assistanceDataToSend: assistanceData,
+        assistanceDataToSend: assistanceData, // Corregir el nombre de la variable aquí
       });
     } catch (error) {
       console.error('Error al guardar la asistencia:', error);
@@ -157,6 +151,7 @@ const ManageUsersScreen = ({ route, navigation }) => {
       setLoadingLocation(false);
     }
   };
+  
   
   return (
     <View style={styles.container}>

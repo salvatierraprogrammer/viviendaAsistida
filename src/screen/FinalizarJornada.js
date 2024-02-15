@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
@@ -13,11 +13,11 @@ const FinalizarJornada = ({ route }) => {
   const [location, setLocation] = useState(null);
   const navigation = useNavigation();
   const { assistanceDataToSend } = route.params;
-
-  
+  const [isLoading, setIsLoading] = useState(false);
   const userId = assistanceDataToSend.userId;
 
   const confirmarTerminarJornada = async () => {
+    setIsLoading(true);
     try {
       const db = getFirestore(app);
   
@@ -71,6 +71,8 @@ const FinalizarJornada = ({ route }) => {
     } catch (error) {
       console.error('Error al actualizar el registro:', error);
       Alert.alert('Error', 'Hubo un error al intentar finalizar la jornada. Por favor, comunícate con soporte.');
+    } finally {
+      setIsLoading(false); // Detiene la carga independientemente del resultado de la operación
     }
   };
   
@@ -123,16 +125,20 @@ const FinalizarJornada = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Finalizar Jornada</Text>
-      <Text style={styles.message}>
-        Al confirmar, se dará por terminada la jornada. ¿Estás seguro de continuar?
-      </Text>
-      <Pressable style={styles.button} onPress={handleConfirmation}>
+    <Text style={styles.title}>Finalizar Jornada</Text>
+    <Text style={styles.message}>
+      Al confirmar, se dará por terminada la jornada. ¿Estás seguro de continuar?
+    </Text>
+    <Pressable style={styles.button} onPress={handleConfirmation} disabled={isLoading}>
+      {isLoading ? (
+        <ActivityIndicator size="small" color="#ffffff" />
+      ) : (
         <Text style={styles.buttonText}>
           Confirmar <MaterialCommunityIcons name="exit-to-app" size={24} color="white" />
         </Text>
-      </Pressable>
-    </View>
+      )}
+    </Pressable>
+  </View>
   );
 };
 const styles = StyleSheet.create({
